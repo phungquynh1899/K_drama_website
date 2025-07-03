@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .video-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        .video-card h3 { margin: 0 0 10px 0; }
+        .video-card p { margin: 5px 0; color: #666; }
+    </style>
+</head>
+<body>
+    <h1><%= title %></h1>
+    
+    <div class="video-grid">
+        <% videos.forEach(function(video) { %>
+            <div class="video-card">
+                <h3><%= video.title %></h3>
+                <p>Episode: <%= video.episode %></p>
+                <button onclick="playVideo(<%= video.id %>)">Play</button>
+            </div>
+        <% }); %>
+    </div>
+
+    <script>
+        function playVideo(id) {
+            console.log('Playing video:', id);
+            // This would make an API call to your laptop's streaming service
+            fetch(`/api/videos/${id}/stream`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Stream data:', data);
+                });
+        }
+    </script>
+</body>
+</html> 

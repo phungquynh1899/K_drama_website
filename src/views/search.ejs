@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết quả tìm kiếm - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Kết quả tìm kiếm phim online">
+    <meta name="keywords" content="tìm kiếm phim, kết quả tìm kiếm">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                    <li><a href="/upload">Upload</a></li>
+                </ul>
+            </nav>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <a href="/auth/login" style="color: #ffffff; text-decoration: none; padding: 8px 16px; border: 1px solid #ffffff; border-radius: 20px; transition: all 0.3s ease;">Đăng nhập</a>
+                <a href="/auth/register" style="color: #ffffff; text-decoration: none; padding: 8px 16px; background: #ffd700; color: #000; border-radius: 20px; transition: all 0.3s ease;">Đăng ký</a>
+            </div>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <form id="searchForm" class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Tìm kiếm phim, diễn viên, thể loại..."
+                value="<%= locals.searchQuery || '' %>"
+            >
+            <button type="submit" class="search-btn">Tìm kiếm</button>
+        </form>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="movie" <%= locals.category === 'movie' ? 'selected' : '' %>>Phim Lẻ</option>
+                <option value="series" <%= locals.category === 'series' ? 'selected' : '' %>>Phim Bộ</option>
+            </select>
+            
+            <select id="genreFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="action" <%= locals.genre === 'action' ? 'selected' : '' %>>Hành động</option>
+                <option value="drama" <%= locals.genre === 'drama' ? 'selected' : '' %>>Tâm lý</option>
+                <option value="comedy" <%= locals.genre === 'comedy' ? 'selected' : '' %>>Hài</option>
+                <option value="horror" <%= locals.genre === 'horror' ? 'selected' : '' %>>Kinh dị</option>
+                <option value="romance" <%= locals.genre === 'romance' ? 'selected' : '' %>>Lãng mạn</option>
+                <option value="sci-fi" <%= locals.genre === 'sci-fi' ? 'selected' : '' %>>Khoa học viễn tưởng</option>
+                <option value="thriller" <%= locals.genre === 'thriller' ? 'selected' : '' %>>Giật gân</option>
+                <option value="animation" <%= locals.genre === 'animation' ? 'selected' : '' %>>Hoạt hình</option>
+            </select>
+            
+            <select id="countryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="us" <%= locals.country === 'us' ? 'selected' : '' %>>Mỹ</option>
+                <option value="kr" <%= locals.country === 'kr' ? 'selected' : '' %>>Hàn Quốc</option>
+                <option value="jp" <%= locals.country === 'jp' ? 'selected' : '' %>>Nhật Bản</option>
+                <option value="cn" <%= locals.country === 'cn' ? 'selected' : '' %>>Trung Quốc</option>
+                <option value="vn" <%= locals.country === 'vn' ? 'selected' : '' %>>Việt Nam</option>
+                <option value="th" <%= locals.country === 'th' ? 'selected' : '' %>>Thái Lan</option>
+            </select>
+            
+            <select id="yearFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="2025" <%= locals.year === '2025' ? 'selected' : '' %>>2025</option>
+                <option value="2024" <%= locals.year === '2024' ? 'selected' : '' %>>2024</option>
+                <option value="2023" <%= locals.year === '2023' ? 'selected' : '' %>>2023</option>
+                <option value="2022" <%= locals.year === '2022' ? 'selected' : '' %>>2022</option>
+                <option value="2021" <%= locals.year === '2021' ? 'selected' : '' %>>2021</option>
+                <option value="2020" <%= locals.year === '2020' ? 'selected' : '' %>>2020</option>
+            </select>
+            
+            <select id="durationFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="short" <%= locals.duration === 'short' ? 'selected' : '' %>>Dưới 30 phút</option>
+                <option value="medium" <%= locals.duration === 'medium' ? 'selected' : '' %>>30' - 1 tiếng</option>
+                <option value="long" <%= locals.duration === 'long' ? 'selected' : '' %>>1 - 1.5 tiếng</option>
+                <option value="very-long" <%= locals.duration === 'very-long' ? 'selected' : '' %>>Trên 1.5 tiếng</option>
+            </select>
+            
+
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Search Results Header -->
+        <div style="margin-bottom: 2rem;">
+            <h1 class="section-title">
+                <% if (locals.searchQuery) { %>
+                    Kết quả tìm kiếm cho "<%= searchQuery %>"
+                <% } else { %>
+                    Tất cả phim
+                <% } %>
+            </h1>
+            <p style="color: #888; margin-bottom: 1rem;">
+                <% if (typeof searchResults !== 'undefined' && searchResults.length > 0) { %>
+                    Tìm thấy <%= searchResults.length %> kết quả
+                    <% if (typeof pagination !== 'undefined' && pagination.totalItems > searchResults.length) { %>
+                        (trên tổng số <%= pagination.totalItems %> kết quả)
+                    <% } %>
+                <% } else { %>
+                    Không tìm thấy kết quả nào
+                <% } %>
+            </p>
+        </div>
+
+        <!-- Search Results -->
+        <% if (typeof searchResults !== 'undefined' && searchResults.length > 0) { %>
+            <div class="movie-grid">
+                <% searchResults.forEach(function(item) { %>
+                    <div class="movie-card" onclick="window.location.href='<%= item.type === 'series' ? '/series/' : '/movie/' %><%= item.id %>'">
+                        <div class="movie-poster">
+                            <% if (item.thumbnail_url) { %>
+                                <img src="<%= item.thumbnail_url %>" alt="<%= item.title %>" loading="lazy">
+                            <% } else if (item.poster) { %>
+                                <img src="<%= item.poster %>" alt="<%= item.title %>" loading="lazy">
+                            <% } else { %>
+                                <span>Không có ảnh</span>
+                            <% } %>
+                        </div>
+                        <div class="movie-info">
+                            <h3 class="movie-title"><%= item.title || 'Untitled' %></h3>
+                            <p class="movie-meta">
+                                <%= item.year || 'Unknown' %> • 
+                                <% if (item.type === 'series') { %>
+                                    <%= item.episodeCount || 0 %> tập
+                                <% } else { %>
+                                    <%= item.duration || 'Unknown' %>
+                                <% } %> 
+                                • <%= item.genre || 'Unknown' %>
+                            </p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span><%= item.rating || 0 %></span>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+
+            <!-- Pagination -->
+            <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+                <div class="pagination">
+                    <% if (pagination.currentPage > 1) { %>
+                        <a href="?<%= pagination.queryString %>&page=<%= pagination.currentPage - 1 %>" class="pagination-btn">Trước</a>
+                    <% } %>
+                    
+                    <% for (let i = Math.max(1, pagination.currentPage - 2); i <= Math.min(pagination.totalPages, pagination.currentPage + 2); i++) { %>
+                        <a href="?<%= pagination.queryString %>&page=<%= i %>" 
+                           class="pagination-btn <%= i === pagination.currentPage ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                    
+                    <% if (pagination.currentPage < pagination.totalPages) { %>
+                        <a href="?<%= pagination.queryString %>&page=<%= pagination.currentPage + 1 %>" class="pagination-btn">Sau</a>
+                    <% } %>
+                </div>
+            <% } %>
+        <% } else { %>
+            <!-- No Results -->
+            <div style="text-align: center; padding: 3rem 0;">
+                <div style="font-size: 4rem; color: #333; margin-bottom: 1rem;">🔍</div>
+                <h2 style="color: #888; margin-bottom: 1rem;">Không tìm thấy kết quả</h2>
+                <p style="color: #666; margin-bottom: 2rem;">
+                    <% if (locals.searchQuery) { %>
+                        Không có phim nào phù hợp với từ khóa "<%= searchQuery %>"
+                    <% } else { %>
+                        Không có phim nào phù hợp với bộ lọc đã chọn
+                    <% } %>
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="/" class="nav-btn">Về trang chủ</a>
+                    <a href="/movies" class="nav-btn">Xem phim lẻ</a>
+                    <a href="/series" class="nav-btn">Xem phim bộ</a>
+                </div>
+            </div>
+        <% } %>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Handle filter form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const filterSelects = document.querySelectorAll('.filter-select');
+            
+            // Handle search form submission
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const searchInput = document.getElementById('searchInput');
+                const searchQuery = searchInput.value.trim();
+                
+                // Build query parameters
+                const params = new URLSearchParams();
+                if (searchQuery) params.set('q', searchQuery);
+                
+                // Add filter parameters
+                filterSelects.forEach(select => {
+                    if (select.value) {
+                        params.set(select.id.replace('Filter', ''), select.value);
+                    }
+                });
+                
+                // Redirect to search with parameters
+                window.location.href = '/search?' + params.toString();
+            });
+            
+            // Handle filter changes
+            filterSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const currentParams = new URLSearchParams(window.location.search);
+                    const searchInput = document.getElementById('searchInput');
+                    
+                    // Update or add the changed filter
+                    if (this.value) {
+                        currentParams.set(this.id.replace('Filter', ''), this.value);
+                    } else {
+                        currentParams.delete(this.id.replace('Filter', ''));
+                    }
+                    
+                    // Keep search query if exists
+                    if (searchInput.value.trim()) {
+                        currentParams.set('q', searchInput.value.trim());
+                    }
+                    
+                    // Redirect with updated parameters
+                    window.location.href = '/search?' + currentParams.toString();
+                });
+            });
+            
+            // Handle search input enter key
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -7,7 +7,6 @@ class DatabaseInterface {
     async createUser(user) { throw new Error('Not implemented'); }
     async getUserById(id) { throw new Error('Not implemented'); }
     async getUserByEmail(email) { throw new Error('Not implemented'); }
-    async getUserByUsername(username) { throw new Error('Not implemented'); }
     async updateUser(id, updates) { throw new Error('Not implemented'); }
     async deleteUser(id) { throw new Error('Not implemented'); }
 
@@ -60,6 +59,16 @@ class DatabaseInterface {
     async getVideoFilesByVideoId(videoId) { throw new Error('Not implemented'); }
     async updateVideoFile(id, updates) { throw new Error('Not implemented'); }
     async deleteVideoFile(id) { throw new Error('Not implemented'); }
+
+    // SERIES
+    async createSeries(series) { throw new Error('Not implemented'); }
+    async getSeriesById(id) { throw new Error('Not implemented'); }
+    async getSeriesByUserId(userId) { throw new Error('Not implemented'); }
+    async updateSeries(id, updates) { throw new Error('Not implemented'); }
+    async deleteSeries(id) { throw new Error('Not implemented'); }
+    async listSeries(filter) { throw new Error('Not implemented'); }
+    async getEpisodesBySeriesId(seriesId) { throw new Error('Not implemented'); }
+    async getEpisodeBySeriesAndNumber(seriesId, episodeNumber) { throw new Error('Not implemented'); }
 }
 
 module.exports = DatabaseInterface;

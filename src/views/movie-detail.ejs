@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= movie.title %> - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="<%= movie.description || movie.title %>">
+    <meta name="keywords" content="<%= movie.title %>, phim online, xem phim">
+    <style>
+        .movie-poster-large {
+            position: relative;
+            width: 300px;
+            height: 450px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .movie-poster-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .movie-poster-large .no-image {
+            color: #666;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .movie-detail {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .movie-detail-info h1 {
+            color: #ffd700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .movie-detail-meta {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .movie-detail-meta p {
+            margin: 0.5rem 0;
+            color: #ffffff;
+        }
+        
+        .movie-detail-meta strong {
+            color: #ffd700;
+        }
+        
+        .movie-description {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .movie-description h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }
+        
+        .movie-description p {
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .movie-introduction {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .movie-introduction h2 {
+            color: #ffd700;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        
+        .movie-introduction-content {
+            color: #ffffff;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .movie-introduction-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .movie-introduction-content ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+        
+        .movie-introduction-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .episodes-section {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+        
+        .episodes-section h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }
+        
+        .episode-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        
+        .episode-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            display: block;
+        }
+        
+        .episode-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .movie-detail {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .movie-poster-large {
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }
+            
+            .movie-detail-info h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                </ul>
+            </nav>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <form id="searchForm" class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Tìm kiếm phim, diễn viên, thể loại..."
+            >
+            <button type="submit" class="search-btn">Tìm kiếm</button>
+        </form>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="movie">Phim Lẻ</option>
+                <option value="series">Phim Bộ</option>
+            </select>
+            
+            <select id="genreFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="action">Hành động</option>
+                <option value="drama">Tâm lý</option>
+                <option value="comedy">Hài</option>
+                <option value="horror">Kinh dị</option>
+                <option value="romance">Lãng mạn</option>
+                <option value="sci-fi">Khoa học viễn tưởng</option>
+                <option value="thriller">Giật gân</option>
+                <option value="animation">Hoạt hình</option>
+            </select>
+            
+            <select id="countryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="us">Mỹ</option>
+                <option value="kr">Hàn Quốc</option>
+                <option value="jp">Nhật Bản</option>
+                <option value="cn">Trung Quốc</option>
+                <option value="vn">Việt Nam</option>
+                <option value="th">Thái Lan</option>
+            </select>
+            
+            <select id="yearFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+            </select>
+            
+            <select id="durationFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="short">Dưới 30 phút</option>
+                <option value="medium">30' - 1 tiếng</option>
+                <option value="long">1 - 1.5 tiếng</option>
+                <option value="very-long">Trên 1.5 tiếng</option>
+            </select>
+            
+            <select id="sortFilter" class="filter-select">
+                <option value="latest">Ngày cập nhật</option>
+                <option value="release">Ngày phát hành</option>
+                <option value="rating">Điểm đánh giá</option>
+                <option value="views">Lượt xem</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Movie Detail -->
+        <div class="movie-detail">
+            <div class="movie-poster-large">
+                <% if (movie.thumbnail_url) { %>
+                    <img src="<%= movie.thumbnail_url %>" alt="<%= movie.title %>" loading="lazy">
+                <% } else if (movie.poster) { %>
+                    <img src="<%= movie.poster %>" alt="<%= movie.title %>" loading="lazy">
+                <% } else { %>
+                    <div class="no-image">
+                        <span>Không có ảnh</span>
+                    </div>
+                <% } %>
+            </div>
+            
+            <div class="movie-detail-info">
+                <h1><%= movie.title %></h1>
+                
+                <div class="movie-detail-meta">
+                    <p><strong>Năm:</strong> <%= movie.year || 'Chưa xác định' %></p>
+                    <p><strong>Thời lượng:</strong> <%= movie.duration || 'Chưa xác định' %></p>
+                    <p><strong>Thể loại:</strong> <%= movie.genre || 'Chưa xác định' %></p>
+                    <p><strong>Quốc gia:</strong> <%= movie.country || 'Chưa xác định' %></p>
+                    <% if (movie.director) { %>
+                        <p><strong>Đạo diễn:</strong> <%= movie.director %></p>
+                    <% } %>
+                    <% if (movie.cast) { %>
+                        <p><strong>Diễn viên:</strong> <%= movie.cast %></p>
+                    <% } %>
+                    <p><strong>Điểm đánh giá:</strong> 
+                        <span style="color: #ffd700;">★ <%= movie.rating || 'Chưa có' %></span>
+                    </p>
+                    <p><strong>Lượt xem:</strong> <%= (movie.views || 0).toLocaleString() %></p>
+                </div>
+                
+                <div class="movie-description">
+                    <h3>Tóm tắt</h3>
+                    <p><%= movie.description || 'Chưa có mô tả' %></p>
+                </div>
+                
+                <% if (movie.type === 'series' && movie.episodes && movie.episodes.length > 0) { %>
+                    <div class="episodes-section">
+                        <h3>Tập phim</h3>
+                        <div class="episode-list">
+                            <% movie.episodes.forEach(function(episode) { %>
+                                <a href="/player/<%= movie.id %>/<%= episode.number %>" 
+                                   class="episode-btn" 
+                                   data-episode="<%= episode.number %>" 
+                                   data-movie="<%= movie.id %>">
+                                    Tập <%= episode.number %>
+                                </a>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } else if (movie.type === 'movie') { %>
+                    <div style="margin-top: 2rem;">
+                        <a href="/player/<%= movie.id %>/1" class="nav-btn" style="font-size: 1.2rem; padding: 15px 30px;">
+                            ▶ Xem phim
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Movie Introduction -->
+        <section class="movie-introduction">
+            <h2>Giới thiệu về phim</h2>
+            <div class="movie-introduction-content">
+                <% if (movie.type === 'series') { %>
+                    <p><strong><%= movie.title %></strong> là một bộ phim truyền hình <%= movie.genre ? movie.genre.toLowerCase() : '' %> 
+                    <% if (movie.year) { %>sản xuất năm <%= movie.year %><% } %>
+                    <% if (movie.country) { %>tại <%= movie.country %><% } %>.</p>
+                    
+                    <p>Bộ phim kể về câu chuyện <%= movie.description ? movie.description.toLowerCase() : 'hấp dẫn và đầy kịch tính' %>. 
+                    Với <%= movie.episodes ? movie.episodes.length : 'nhiều' %> tập phim, khán giả sẽ được theo dõi hành trình 
+                    của các nhân vật chính qua những tình tiết gay cấn và bất ngờ.</p>
+                    
+                    <p><strong>Điểm nổi bật của bộ phim:</strong></p>
+                    <ul>
+                        <li>Nội dung hấp dẫn với nhiều tình tiết bất ngờ</li>
+                        <li>Dàn diễn viên tài năng và chuyên nghiệp</li>
+                        <li>Hình ảnh và âm thanh chất lượng cao</li>
+                        <li>Kịch bản được đầu tư công phu</li>
+                    </ul>
+                    
+                    <p>Hãy cùng khám phá và thưởng thức bộ phim <%= movie.title %> ngay bây giờ!</p>
+                <% } else { %>
+                    <p><strong><%= movie.title %></strong> là một bộ phim <%= movie.genre ? movie.genre.toLowerCase() : '' %> 
+                    <% if (movie.year) { %>sản xuất năm <%= movie.year %><% } %>
+                    <% if (movie.country) { %>tại <%= movie.country %><% } %>.</p>
+                    
+                    <p><%= movie.description || 'Phim kể về một câu chuyện hấp dẫn và đầy kịch tính, với những tình tiết gay cấn và bất ngờ.' %></p>
+                    
+                    <p><strong>Điểm nổi bật của phim:</strong></p>
+                    <ul>
+                        <li>Nội dung hấp dẫn với nhiều tình tiết bất ngờ</li>
+                        <li>Dàn diễn viên tài năng và chuyên nghiệp</li>
+                        <li>Hình ảnh và âm thanh chất lượng cao</li>
+                        <li>Kịch bản được đầu tư công phu</li>
+                        <% if (movie.director) { %>
+                            <li>Đạo diễn: <%= movie.director %></li>
+                        <% } %>
+                        <% if (movie.cast) { %>
+                            <li>Diễn viên chính: <%= movie.cast %></li>
+                        <% } %>
+                    </ul>
+                    
+                    <p>Với thời lượng <%= movie.duration || 'phù hợp' %>, phim sẽ mang đến cho khán giả những phút giây giải trí 
+                    tuyệt vời và những cảm xúc khó quên.</p>
+                    
+                    <p>Hãy cùng khám phá và thưởng thức phim <%= movie.title %> ngay bây giờ!</p>
+                <% } %>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Sample movie data for demonstration
+        if (typeof movie === 'undefined') {
+            window.movie = {
+                id: 1,
+                title: "Thunderbolts*",
+                year: 2025,
+                duration: "2h 15m",
+                genre: "Hành động",
+                country: "Mỹ",
+                director: "Jake Schreier",
+                cast: "Florence Pugh, Sebastian Stan, Wyatt Russell",
+                rating: 8.5,
+                views: 1200000,
+                type: "movie",
+                description: "Thunderbolts* là một bộ phim siêu anh hùng của Marvel Studios, kể về một nhóm các nhân vật phản diện được tuyển mộ để thực hiện các nhiệm vụ nguy hiểm cho chính phủ. Phim khám phá các chủ đề về sự cứu chuộc, lòng trung thành và ranh giới giữa thiện và ác.",
+                thumbnail_url: null,
+                poster: null
+            };
+        }
+    </script>
+</body>
+</html> 

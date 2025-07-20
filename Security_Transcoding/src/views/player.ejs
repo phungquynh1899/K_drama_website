@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= movie.title %> - Tập <%= episode.number %> - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Xem <%= movie.title %> tập <%= episode.number %>">
+    <meta name="keywords" content="<%= movie.title %>, xem phim online">
+    
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/video.js@8.6.1/dist/video-js.css" rel="stylesheet" />
+    
+    <!-- Custom Video.js Styles -->
+    <style>
+        .video-js {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+        
+        .vjs-control-bar {
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        }
+        
+        .vjs-big-play-button {
+            background: rgba(255, 215, 0, 0.8);
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            font-size: 40px;
+            margin-left: -40px;
+            margin-top: -40px;
+        }
+        
+        .vjs-big-play-button:hover {
+            background: rgba(255, 215, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        .vjs-progress-control .vjs-progress-holder {
+            height: 8px;
+        }
+        
+        .vjs-progress-control .vjs-play-progress {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .vjs-volume-level {
+            background: #ffd700;
+        }
+        
+        .vjs-slider:focus {
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .video-js {
+                height: 300px;
+            }
+            
+            .vjs-big-play-button {
+                width: 60px;
+                height: 60px;
+                line-height: 60px;
+                font-size: 30px;
+                margin-left: -30px;
+                margin-top: -30px;
+            }
+        }
+        
+        /* Loading animation */
+        .video-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #888;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                </ul>
+            </nav>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="player-container">
+        <!-- Video Player -->
+        <div class="video-player">
+            <% if (episode.videoUrl) { %>
+                <video 
+                    id="videoPlayer" 
+                    class="video-js vjs-default-skin vjs-big-play-centered"
+                    controls 
+                    preload="metadata"
+                    data-setup='{
+                        "fluid": true,
+                        "responsive": true,
+                        "playbackRates": [0.5, 0.75, 1, 1.25, 1.5, 2],
+                        "controlBar": {
+                            "children": [
+                                "playToggle",
+                                "volumePanel",
+                                "currentTimeDisplay",
+                                "timeDivider",
+                                "durationDisplay",
+                                "progressControl",
+                                "playbackRateMenuButton",
+                                "fullscreenToggle"
+                            ]
+                        }
+                    }'
+                >
+                    <source src="<%= episode.videoUrl %>" type="video/mp4">
+                    <source src="<%= episode.videoUrl %>" type="video/webm">
+                    <p class="vjs-no-js">
+                        Để xem video này, vui lòng bật JavaScript và sử dụng trình duyệt hỗ trợ HTML5 video.
+                    </p>
+                </video>
+            <% } else { %>
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🎬</div>
+                    <h3>Video không khả dụng</h3>
+                    <p>Video này chưa được cập nhật hoặc không có sẵn.</p>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Player Controls -->
+        <div class="player-controls">
+            <div class="player-nav">
+                <% if (episode.number > 1) { %>
+                    <a href="/player/<%= movie.id %>/<%= episode.number - 1 %>" 
+                       class="nav-btn" 
+                       id="prevEpisode" 
+                       data-current="<%= episode.number %>" 
+                       data-movie="<%= movie.id %>">
+                        ← Tập trước
+                    </a>
+                <% } %>
+                
+                <a href="<%= movie.type === 'series' ? '/series/' : '/movie/' %><%= movie.id %>" class="nav-btn">
+                    📋 Chi tiết phim
+                </a>
+                
+                <% if (episode.number < movie.totalEpisodes) { %>
+                    <a href="/player/<%= movie.id %>/<%= episode.number + 1 %>" 
+                       class="nav-btn" 
+                       id="nextEpisode" 
+                       data-current="<%= episode.number %>" 
+                       data-total="<%= movie.totalEpisodes %>" 
+                       data-movie="<%= movie.id %>">
+                        Tập tiếp →
+                    </a>
+                <% } %>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span style="color: #888;">
+                    Tập <%= episode.number %><% if (movie.totalEpisodes) { %> / <%= movie.totalEpisodes %><% } %>
+                </span>
+                <button onclick="toggleFullscreen()" class="nav-btn">⛶ Toàn màn hình</button>
+            </div>
+        </div>
+
+        <!-- Episode List (for series) -->
+        <% if (movie.type === 'series' && movie.episodes && movie.episodes.length > 0) { %>
+            <div style="margin-top: 2rem;">
+                <h3 style="color: #ffd700; margin-bottom: 1rem;">Danh sách tập</h3>
+                <div class="episode-list" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
+                    <% movie.episodes.forEach(function(ep) { %>
+                        <a href="/player/<%= movie.id %>/<%= ep.number %>" 
+                           class="episode-btn <%= ep.number === episode.number ? 'active' : '' %>" 
+                           data-episode="<%= ep.number %>" 
+                           data-movie="<%= movie.id %>">
+                            <%= ep.number %>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Movie Info -->
+        <div style="margin-top: 2rem; padding: 1rem; background: #1a1a1a; border-radius: 10px;">
+            <h3 style="color: #ffd700; margin-bottom: 1rem;"><%= movie.title %></h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; color: #888;">
+                <div>
+                    <p><strong>Năm:</strong> <%= movie.year %></p>
+                    <p><strong>Thể loại:</strong> <%= movie.genre %></p>
+                    <p><strong>Điểm đánh giá:</strong> <span style="color: #ffd700;">★ <%= movie.rating %></span></p>
+                </div>
+                <div>
+                    <p><strong>Thời lượng:</strong> <%= movie.duration %></p>
+                    <p><strong>Quốc gia:</strong> <%= movie.country %></p>
+                </div>
+            </div>
+            <p style="margin-top: 1rem; line-height: 1.6;"><%= movie.description %></p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Video.js JavaScript -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Sample data for demonstration
+        if (typeof movie === 'undefined') {
+            window.movie = {
+                id: 1,
+                title: "Thunderbolts*",
+                year: 2025,
+                duration: "2h 15m",
+                genre: "Hành động",
+                country: "Mỹ",
+                rating: 8.5,
+                views: 1200000,
+                type: "movie",
+                totalEpisodes: 1,
+                description: "Thunderbolts* là một bộ phim siêu anh hùng của Marvel Studios, kể về một nhóm các nhân vật phản diện được tuyển mộ để thực hiện các nhiệm vụ nguy hiểm cho chính phủ.",
+                episodes: [
+                    { number: 1, videoUrl: null }
+                ]
+            };
+        }
+        
+        if (typeof episode === 'undefined') {
+            window.episode = {
+                number: 1,
+                videoUrl: null
+            };
+        }
+
+        // Initialize Video.js player
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoElement = document.getElementById('videoPlayer');
+            if (videoElement && typeof videojs !== 'undefined') {
+                const player = videojs('videoPlayer', {
+                    fluid: true,
+                    responsive: true,
+                    preload: 'metadata',
+                    playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+                    controlBar: {
+                        children: [
+                            'playToggle',
+                            'volumePanel',
+                            'currentTimeDisplay',
+                            'timeDivider',
+                            'durationDisplay',
+                            'progressControl',
+                            'playbackRateMenuButton',
+                            'fullscreenToggle'
+                        ]
+                    }
+                });
+
+                // Enhanced keyboard shortcuts for Video.js
+                document.addEventListener('keydown', function(e) {
+                    if (!player) return;
+                    
+                    switch(e.code) {
+                        case 'Space':
+                            e.preventDefault();
+                            if (player.paused()) {
+                                player.play();
+                            } else {
+                                player.pause();
+                            }
+                            break;
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            player.currentTime(player.currentTime() - 10);
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            player.currentTime(player.currentTime() + 10);
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            const newVolumeUp = Math.min(1, player.volume() + 0.1);
+                            player.volume(newVolumeUp);
+                            break;
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            const newVolumeDown = Math.max(0, player.volume() - 0.1);
+                            player.volume(newVolumeDown);
+                            break;
+                        case 'KeyF':
+                            e.preventDefault();
+                            if (player.isFullscreen()) {
+                                player.exitFullscreen();
+                            } else {
+                                player.requestFullscreen();
+                            }
+                            break;
+                        case 'KeyM':
+                            e.preventDefault();
+                            player.muted(!player.muted());
+                            break;
+                    }
+                });
+
+                // Auto-play next episode
+                player.on('ended', function() {
+                    const nextBtn = document.getElementById('nextEpisode');
+                    if (nextBtn) {
+                        setTimeout(() => {
+                            if (confirm('Tự động chuyển sang tập tiếp theo?')) {
+                                window.location.href = nextBtn.href;
+                            }
+                        }, 3000);
+                    }
+                });
+
+                // Track video progress for analytics
+                player.on('timeupdate', function() {
+                    const currentTime = player.currentTime();
+                    const duration = player.duration();
+                    const progress = (currentTime / duration) * 100;
+                    
+                    // Send progress to server (if needed)
+                    // console.log('Video progress:', progress.toFixed(1) + '%');
+                });
+
+                // Handle video errors
+                player.on('error', function() {
+                    console.error('Video playback error');
+                    // Show error message to user
+                    const errorDiv = document.createElement('div');
+                    errorDiv.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #888;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+                            <h3>Lỗi phát video</h3>
+                            <p>Không thể phát video này. Vui lòng thử lại sau.</p>
+                        </div>
+                    `;
+                    player.el().appendChild(errorDiv);
+                });
+
+                // Mobile optimizations
+                if (window.innerWidth <= 768) {
+                    player.fluid(true);
+                    player.responsive(true);
+                }
+
+                // Performance optimizations
+                player.ready(function() {
+                    // Preload next episode if available
+                    const nextEpisode = document.getElementById('nextEpisode');
+                    if (nextEpisode) {
+                        // Preload next episode metadata
+                        const link = document.createElement('link');
+                        link.rel = 'prefetch';
+                        link.href = nextEpisode.href;
+                        document.head.appendChild(link);
+                    }
+                });
+
+            } else {
+                // Fallback for when Video.js is not available
+                console.log('Video.js not available, using native HTML5 video');
+            }
+        });
+
+        // Fullscreen functionality (fallback)
+        function toggleFullscreen() {
+            const player = videojs.getPlayer('videoPlayer');
+            if (player) {
+                if (player.isFullscreen()) {
+                    player.exitFullscreen();
+                } else {
+                    player.requestFullscreen();
+                }
+            }
+        }
+
+        // Track video views
+        function trackVideoView() {
+            const videoId = '<%= movie.id %>';
+            const episodeNumber = '<%= episode.number %>';
+            
+            // Send view tracking to server
+            fetch('/api/track-view', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    videoId: videoId,
+                    episodeNumber: episodeNumber,
+                    timestamp: new Date().toISOString()
+                })
+            }).catch(error => {
+                console.log('View tracking failed:', error);
+            });
+        }
+
+        // Track view after 5 seconds of playback
+        setTimeout(trackVideoView, 5000);
+    </script>
+</body>
+</html> 

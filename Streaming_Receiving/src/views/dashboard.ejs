@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Dashboard người dùng - Video Website">
+    <meta name="keywords" content="dashboard, user, video website">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffd700;
+        }
+
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        .user-email {
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-menu:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0.5rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-header h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-header p {
+            color: #cccccc;
+            font-size: 1.1rem;
+        }
+
+        .welcome-section {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .welcome-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin: 0 auto 1rem;
+        }
+
+        .welcome-text {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtext {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .videos-section {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: #ffffff;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4);
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            font-size: 3rem;
+        }
+
+        .video-title {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .video-meta {
+            color: #cccccc;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-number {
+            color: #ffd700;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            color: #cccccc;
+            font-size: 0.8rem;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #cccccc;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #cccccc;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar-nav {
+                gap: 1rem;
+            }
+
+            .user-email {
+                display: none;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">Video Website</a>
+        <div class="navbar-nav">
+            <a href="/" class="nav-link">Trang chủ</a>
+            <a href="/search" class="nav-link">Tìm kiếm</a>
+            <a href="/upload" class="nav-link">Tải lên</a>
+            
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span class="user-email" id="userEmail">user@example.com</span>
+                <div class="dropdown-menu">
+                    <a href="/profile" class="dropdown-item">Hồ sơ</a>
+                    <a href="/settings" class="dropdown-item">Cài đặt</a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item" onclick="logout()">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="welcome-section">
+            <div class="welcome-avatar" id="welcomeAvatar">U</div>
+            <h2 class="welcome-text">Chào mừng trở lại!</h2>
+            <p class="welcome-subtext" id="welcomeSubtext">Quản lý video của bạn</p>
+        </div>
+
+        <div class="videos-section">
+            <div class="section-header">
+                <h2 class="section-title">Video của tôi</h2>
+                <a href="/upload" class="btn btn-primary">Tải video mới</a>
+            </div>
+
+            <div id="videosContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Đang tải video...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Token management utilities
+        const TokenManager = {
+            getAccessToken() {
+                return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            },
+
+            getRefreshToken() {
+                return localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+            },
+
+            isTokenExpired() {
+                const expiry = localStorage.getItem('tokenExpiry') || sessionStorage.getItem('tokenExpiry');
+                return expiry && Date.now() > parseInt(expiry);
+            },
+
+            clearTokens() {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                localStorage.removeItem('tokenExpiry');
+                sessionStorage.removeItem('accessToken');
+                sessionStorage.removeItem('refreshToken');
+                sessionStorage.removeItem('tokenExpiry');
+            },
+
+            async refreshAccessToken() {
+                const refreshToken = this.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No refresh token available');
+                }
+
+                try {
+                    const response = await fetch('/api/v1/auth/refreshToken', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ refreshToken })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to refresh token');
+                    }
+
+                    const result = await response.json();
+                    const newAccessToken = result.metadata.accessToken;
+                    
+                    if (localStorage.getItem('accessToken')) {
+                        localStorage.setItem('accessToken', newAccessToken);
+                        localStorage.setItem('tokenExpiry', Date.now() + (3 * 24 * 60 * 60 * 1000));
+                    } else {
+                        sessionStorage.setItem('accessToken', newAccessToken);
+                        sessionStorage.setItem('tokenExpiry', Date.now() + (3 * 24 * 60 * 60 * 1000));
+                    }
+
+                    return newAccessToken;
+                } catch (error) {
+                    console.error('Token refresh failed:', error);
+                    this.clearTokens();
+                    throw error;
+                }
+            }
+        };
+
+        // User data management
+        const UserManager = {
+            async getUserInfo() {
+                try {
+                    const response = await fetch('/api/v1/user/profile', {
+                        headers: {
+                            'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            await TokenManager.refreshAccessToken();
+                            return this.getUserInfo();
+                        }
+                        throw new Error('Failed to get user info');
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error getting user info:', error);
+                    return null;
+                }
+            },
+
+            async getUserVideos() {
+                try {
+                    const response = await fetch('/api/v1/user/videos', {
+                        headers: {
+                            'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            await TokenManager.refreshAccessToken();
+                            return this.getUserVideos();
+                        }
+                        throw new Error('Failed to get user videos');
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error getting user videos:', error);
+                    return null;
+                }
+            }
+        };
+
+        // Initialize dashboard
+        async function initializeDashboard() {
+            if (!TokenManager.getAccessToken()) {
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            const userInfo = await UserManager.getUserInfo();
+            if (userInfo) {
+                updateUserInterface(userInfo.metadata);
+            }
+
+            await loadUserVideos();
+        }
+
+        function updateUserInterface(user) {
+            const email = user.email;
+            const firstLetter = email.charAt(0).toUpperCase();
+            
+            document.getElementById('userAvatar').textContent = firstLetter;
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('welcomeAvatar').textContent = firstLetter;
+            document.getElementById('welcomeSubtext').textContent = `Chào mừng ${email}`;
+        }
+
+        async function loadUserVideos() {
+            const videosData = await UserManager.getUserVideos();
+            const container = document.getElementById('videosContainer');
+
+            if (!videosData || !videosData.metadata || videosData.metadata.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📹</div>
+                        <h3>Chưa có video nào</h3>
+                        <p>Bạn chưa tải lên video nào. Hãy bắt đầu bằng cách tải lên video đầu tiên!</p>
+                        <a href="/upload" class="btn btn-primary" style="margin-top: 1rem;">Tải video đầu tiên</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const videos = videosData.metadata;
+            const videosHTML = videos.map(video => `
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        📹
+                    </div>
+                    <h3 class="video-title">${video.title || 'Không có tiêu đề'}</h3>
+                    <div class="video-meta">
+                        <div>Tải lên: ${new Date(video.created_at).toLocaleDateString('vi-VN')}</div>
+                        <div>Trạng thái: ${getStatusText(video.status)}</div>
+                    </div>
+                    <div class="video-stats">
+                        <div class="stat">
+                            <span class="stat-number">${video.duration_seconds ? formatDuration(video.duration_seconds) : 'N/A'}</span>
+                            <span class="stat-label">Thời lượng</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">${video.views || 0}</span>
+                            <span class="stat-label">Lượt xem</span>
+                        </div>
+                    </div>
+                    <div class="video-actions">
+                        <a href="/video/${video.id}" class="btn btn-primary btn-small">Xem</a>
+                        <a href="/video/${video.id}/edit" class="btn btn-secondary btn-small">Chỉnh sửa</a>
+                        <button class="btn btn-danger btn-small" onclick="deleteVideo(${video.id})">Xóa</button>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = videosHTML;
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'uploading': 'Đang tải lên',
+                'processing': 'Đang xử lý',
+                'ready': 'Sẵn sàng',
+                'error': 'Lỗi'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        async function deleteVideo(videoId) {
+            if (!confirm('Bạn có chắc chắn muốn xóa video này?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/v1/user/videos/${videoId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getAccessToken()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        await TokenManager.refreshAccessToken();
+                        return deleteVideo(videoId);
+                    }
+                    throw new Error('Failed to delete video');
+                }
+
+                // Reload videos after deletion
+                await loadUserVideos();
+            } catch (error) {
+                console.error('Error deleting video:', error);
+                alert('Có lỗi xảy ra khi xóa video');
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.getAccessToken()}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                TokenManager.clearTokens();
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+                TokenManager.clearTokens();
+                window.location.href = '/';
+            }
+        }
+
+        // Auto-refresh token when it's about to expire
+        setInterval(async () => {
+            if (TokenManager.isTokenExpired()) {
+                try {
+                    await TokenManager.refreshAccessToken();
+                } catch (error) {
+                    console.error('Auto token refresh failed:', error);
+                    TokenManager.clearTokens();
+                    window.location.href = '/auth/login';
+                }
+            }
+        }, 60000);
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html> 

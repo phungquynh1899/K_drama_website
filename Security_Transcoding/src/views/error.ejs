@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi <%= error %> - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Trang lỗi">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .error-card {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .error-icon {
+            font-size: 6rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-code {
+            font-size: 4rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+        }
+        
+        .error-description {
+            color: #888;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .error-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+        
+        .error-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .error-btn.secondary {
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+        }
+        
+        .error-btn.secondary:hover {
+            background: #ffd700;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">
+                <% if (error === 404) { %>
+                    🔍
+                <% } else if (error === 403) { %>
+                    🚫
+                <% } else if (error === 500) { %>
+                    ⚠️
+                <% } else { %>
+                    ❌
+                <% } %>
+            </div>
+            
+            <div class="error-code"><%= error %></div>
+            
+            <div class="error-message">
+                <%= message %>
+            </div>
+            
+            <div class="error-description">
+                <% if (error === 404) { %>
+                    Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.
+                <% } else if (error === 403) { %>
+                    Bạn không có quyền truy cập vào trang này.
+                <% } else if (error === 500) { %>
+                    Có lỗi xảy ra trên máy chủ. Vui lòng thử lại sau.
+                <% } else { %>
+                    Có lỗi không mong muốn xảy ra. Vui lòng thử lại sau.
+                <% } %>
+            </div>
+            
+            <div class="error-actions">
+                <a href="/" class="error-btn">Về trang chủ</a>
+                <a href="/search" class="error-btn secondary">Tìm kiếm</a>
+                <button onclick="history.back()" class="error-btn secondary">Quay lại</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

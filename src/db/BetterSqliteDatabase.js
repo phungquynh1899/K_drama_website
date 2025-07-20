@@ -27,6 +27,7 @@ class BetterSqliteDatabase extends DatabaseInterface {
         }
         BetterSqliteDatabase._instance = this;
         this.db = new Database(filename);
+        this.db.pragma('foreign_keys = ON');
         this._initTables();
     }
 
@@ -41,10 +42,9 @@ class BetterSqliteDatabase extends DatabaseInterface {
         // Users
         this.db.exec(`CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            role TEXT DEFAULT 'user',
+            role TEXT DEFAULT 'user' CHECK(role IN ('user', 'admin')),
             is_active INTEGER DEFAULT 1,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -57,27 +57,31 @@ class BetterSqliteDatabase extends DatabaseInterface {
             description TEXT,
             year INTEGER,
             genre TEXT,
+            country TEXT,
             actors TEXT,
             duration_seconds INTEGER,
             original_filename TEXT NOT NULL,
+            original_filetype TEXT NOT NULL,
             uploader_user_id INTEGER NOT NULL,
+            series_id INTEGER,
+            episode_number INTEGER,
+            thumbnail_url TEXT,
             status TEXT DEFAULT 'uploading',
             is_public INTEGER DEFAULT 1,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (uploader_user_id) REFERENCES users(id) ON DELETE CASCADE
+            FOREIGN KEY (uploader_user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (series_id) REFERENCES series(id) ON DELETE CASCADE,
+            UNIQUE(series_id, episode_number)
         )`);
         
         // API Keys
         this.db.exec(`CREATE TABLE IF NOT EXISTS api_keys (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
             api_key TEXT UNIQUE NOT NULL,
-            name TEXT NOT NULL,
             is_active INTEGER DEFAULT 1,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            last_used DATETIME,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            last_used DATETIME
         )`);
 
         // Keys (public/private)
@@ -95,13 +99,11 @@ class BetterSqliteDatabase extends DatabaseInterface {
 
         // Fix typo in uploads table and add missing tables
         this.db.exec(`CREATE TABLE IF NOT EXISTS uploads (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id BIGINT PRIMARY KEY,
             user_id INTEGER NOT NULL,
             video_id INTEGER,
             filename VARCHAR(255) NOT NULL,
             total_size BIGINT NOT NULL,
-            total_chunks INTEGER NOT NULL,
-            uploaded_chunks TEXT,
             status TEXT DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             completed_at TIMESTAMP,
@@ -127,7 +129,7 @@ class BetterSqliteDatabase extends DatabaseInterface {
         this.db.exec(`CREATE TABLE IF NOT EXISTS transcoding_jobs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             video_id INTEGER NOT NULL,
-            status TEXT DEFAULT 'queued',
+            status TEXT NOT NULL DEFAULT 'queued' ,
             provider TEXT DEFAULT 'google_cloud',
             priority INTEGER DEFAULT 5,
             input_format VARCHAR(20),
@@ -155,7 +157,7 @@ class BetterSqliteDatabase extends DatabaseInterface {
             FOREIGN KEY (video_id) REFERENCES videos(id)
         )`);
 
-        // Optional: user_sessions
+        // user_sessions
         this.db.exec(`CREATE TABLE IF NOT EXISTS user_sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -177,24 +179,37 @@ class BetterSqliteDatabase extends DatabaseInterface {
             FOREIGN KEY (video_id) REFERENCES videos(id),
             FOREIGN KEY (user_id) REFERENCES users(id)
         )`);
-        // Optional: comments
-        this.db.exec(`CREATE TABLE IF NOT EXISTS comments (
+
+        // Series table
+        this.db.exec(`CREATE TABLE IF NOT EXISTS series (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            video_id INTEGER NOT NULL,
-            user_id INTEGER,
-            facebook_comment_id VARCHAR(255),
-            content TEXT NOT NULL,
-            is_approved BOOLEAN DEFAULT TRUE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (video_id) REFERENCES videos(id),
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            name TEXT NOT NULL,
+            description TEXT,
+            year INTEGER,
+            genre TEXT,
+            country TEXT,
+            director TEXT,
+            cast TEXT,
+            poster TEXT,
+            total_episodes INTEGER DEFAULT 2,
+            status TEXT DEFAULT 'active',
+            uploader_user_id INTEGER NOT NULL,
+            is_public INTEGER DEFAULT 1,
+            thumbnail_url TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (uploader_user_id) REFERENCES users(id) ON DELETE CASCADE
         )`);
+        
     }
 
     // USERS
     async createUser(user) {
-        const stmt = this.db.prepare(`INSERT INTO users (username, email, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?)`);
-        const result = stmt.run(user.username, user.email, user.password_hash, user.role || 'user', user.is_active ?? 1);
+        if (!user.email || user.email.trim() === '') {
+            throw new Error('Email cannot be empty');
+        }
+        const stmt = this.db.prepare(`INSERT INTO users (email, password_hash, role, is_active) VALUES (?, ?, ?, ?)`);
+        const result = stmt.run(user.email, user.password_hash, user.role || 'user', user.is_active ?? 1);
         return { id: result.lastInsertRowid, ...user };
     }
     async getUserById(id) {
@@ -203,13 +218,14 @@ class BetterSqliteDatabase extends DatabaseInterface {
     async getUserByEmail(email) {
         return this.db.prepare('SELECT * FROM users WHERE email = ?').get(email);
     }
-    async getUserByUsername(username) {
-        return this.db.prepare('SELECT * FROM users WHERE username = ?').get(username);
+
+    async getAllUsers() {
+        return this.db.prepare('SELECT * FROM users ORDER BY id').all();
     }
     async updateUser(id, updates) {
         const fields = [];
         const values = [];
-        for (const key of ['username', 'email', 'password_hash', 'role', 'is_active']) {
+        for (const key of ['email', 'password_hash', 'role', 'is_active']) {
             if (updates[key] !== undefined) {
                 fields.push(`${key} = ?`);
                 values.push(updates[key]);
@@ -229,8 +245,8 @@ class BetterSqliteDatabase extends DatabaseInterface {
 
     // API KEYS
     async createApiKey(apiKey) {
-        const stmt = this.db.prepare(`INSERT INTO api_keys (user_id, api_key, name, is_active) VALUES (?, ?, ?, ?)`);
-        const result = stmt.run(apiKey.user_id, apiKey.api_key, apiKey.name, apiKey.is_active ?? 1);
+        const stmt = this.db.prepare(`INSERT INTO api_keys (api_key, is_active) VALUES (?, ?)`);
+        const result = stmt.run(apiKey.api_key, apiKey.is_active ?? 1);
         return { id: result.lastInsertRowid, ...apiKey };
     }
     async getApiKeyById(id) {
@@ -239,8 +255,8 @@ class BetterSqliteDatabase extends DatabaseInterface {
     async getApiKeyByKey(apiKey) {
         return this.db.prepare('SELECT * FROM api_keys WHERE api_key = ? AND is_active = 1').get(apiKey);
     }
-    async getApiKeysByUserId(userId) {
-        return this.db.prepare('SELECT * FROM api_keys WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+    async getAllApiKeys() {
+        return this.db.prepare('SELECT * FROM api_keys ORDER BY created_at DESC').all();
     }
     async deactivateApiKey(id) {
         const result = this.db.prepare('UPDATE api_keys SET is_active = 0 WHERE id = ?').run(id);
@@ -252,23 +268,34 @@ class BetterSqliteDatabase extends DatabaseInterface {
     }
 
     // KEYS (public/private)
-    async createKeyPair(keyPair) { throw new Error('Not implemented'); }
-    async getKeyPairByUserId(userId) { throw new Error('Not implemented'); }
+    async createKeyPair({ user_id, public_key, private_key, is_active }) {
+        const stmt = this.db.prepare(`INSERT INTO keys (user_id, public_key, private_key, is_active, created_at) VALUES (?, ?, ?, ?, ?)`);
+        const result = stmt.run(user_id, public_key, private_key, is_active ?? 1, new Date().toISOString());
+        return { id: result.lastInsertRowid, user_id, public_key, private_key, is_active };
+    }
+    async getKeyPairByUserId(userId) {
+        return this.db.prepare('SELECT * FROM keys WHERE user_id = ? AND is_active = 1').get(userId);
+    }
     async deactivateKeyPair(id) { throw new Error('Not implemented'); }
     async deleteKeyPair(id) { throw new Error('Not implemented'); }
 
     // VIDEOS
     async createVideo(video) {
-        const stmt = this.db.prepare(`INSERT INTO videos (title, description, year, genre, actors, duration_seconds, original_filename, uploader_user_id, status, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const stmt = this.db.prepare(`INSERT INTO videos (title, description, year, genre, country, actors, duration_seconds, original_filename, original_filetype, uploader_user_id, series_id, episode_number, thumbnail_url, status, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
         const result = stmt.run(
             video.title,
             video.description,
             video.year,
             video.genre,
+            video.country,
             JSON.stringify(video.actors || []),
             video.duration_seconds,
             video.original_filename,
+            video.original_filetype,
             video.uploader_user_id,
+            video.series_id || null,
+            video.episode_number || null,
+            video.thumbnail_url || null,
             video.status || 'uploading',
             video.is_public ?? 1
         );
@@ -287,7 +314,7 @@ class BetterSqliteDatabase extends DatabaseInterface {
     async updateVideo(id, updates) {
         const fields = [];
         const values = [];
-        for (const key of ['title', 'description', 'year', 'genre', 'actors', 'duration_seconds', 'original_filename', 'status', 'is_public']) {
+        for (const key of ['title', 'description', 'year', 'genre', 'actors', 'duration_seconds', 'original_filename', 'series_id', 'episode_number', 'thumbnail_url', 'status', 'is_public']) {
             if (updates[key] !== undefined) {
                 if (key === 'actors') {
                     fields.push(`${key} = ?`);
@@ -324,6 +351,22 @@ class BetterSqliteDatabase extends DatabaseInterface {
             sql += ' AND uploader_user_id = ?';
             values.push(filter.uploader_user_id);
         }
+        if (filter.series_id) {
+            sql += ' AND series_id = ?';
+            values.push(filter.series_id);
+        }
+        if (filter.episode_number) {
+            sql += ' AND episode_number = ?';
+            values.push(filter.episode_number);
+        }
+        // Filter for movies only (no series_id)
+        if (filter.movies_only) {
+            sql += ' AND series_id IS NULL';
+        }
+        // Filter for episodes only (has series_id)
+        if (filter.episodes_only) {
+            sql += ' AND series_id IS NOT NULL';
+        }
         sql += ' ORDER BY created_at DESC';
         if (filter.limit) {
             sql += ' LIMIT ?';
@@ -336,17 +379,16 @@ class BetterSqliteDatabase extends DatabaseInterface {
 
     // UPLOADS
     async createUpload(upload) {
-        const stmt = this.db.prepare(`INSERT INTO uploads (user_id, video_id, filename, total_size, total_chunks, uploaded_chunks, status) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+        const stmt = this.db.prepare(`INSERT INTO uploads (id, user_id, video_id, filename, total_size, status) VALUES (?, ?, ?, ?, ?, ?)`);
         const result = stmt.run(
+            upload.id, // uploadId from frontend
             upload.user_id,
             upload.video_id || null,
             upload.filename,
             upload.total_size,
-            upload.total_chunks,
-            JSON.stringify(upload.uploaded_chunks || []),
             upload.status || 'pending'
         );
-        return { id: result.lastInsertRowid, ...upload };
+        return { id: upload.id, ...upload };
     }
     async getUploadById(id) {
         const row = this.db.prepare('SELECT * FROM uploads WHERE id = ?').get(id);
@@ -516,6 +558,11 @@ class BetterSqliteDatabase extends DatabaseInterface {
         const result = this.db.prepare('DELETE FROM video_files WHERE id = ?').run(id);
         return result.changes > 0;
     }
+    
+    async deleteVideoFileByPath(filePath) {
+        const result = this.db.prepare('DELETE FROM video_files WHERE file_path = ?').run(filePath);
+        return result.changes > 0;
+    }
 
     // VIDEO ANALYTICS
     async createVideoAnalytics(analytics) {
@@ -560,6 +607,131 @@ class BetterSqliteDatabase extends DatabaseInterface {
     async deleteVideoAnalytics(id) {
         const result = this.db.prepare('DELETE FROM video_analytics WHERE id = ?').run(id);
         return result.changes > 0;
+    }
+
+    // --- JWT Auth: Key Pair and Refresh Token Management ---
+    async deleteRefreshTokenByUserId(userId) {
+        const result = this.db.prepare('DELETE FROM user_sessions WHERE user_id = ?').run(userId);
+        return result.changes > 0;
+    }
+    async deleteKeyPairByUserId(userId) {
+        const result = this.db.prepare('DELETE FROM keys WHERE user_id = ?').run(userId);
+        return result.changes > 0;
+    }
+    async createRefreshToken({ user_id, refresh_token, expires_at }) {
+        const stmt = this.db.prepare(`INSERT INTO user_sessions (user_id, refresh_token, expires_at, created_at) VALUES (?, ?, ?, ?)`);
+        const result = stmt.run(user_id, refresh_token, expires_at, new Date().toISOString());
+        return { id: result.lastInsertRowid, user_id, refresh_token, expires_at };
+    }
+    async getRefreshTokenByToken(refresh_token) {
+        return this.db.prepare('SELECT * FROM user_sessions WHERE refresh_token = ?').get(refresh_token);
+    }
+    async deleteRefreshTokenByToken(refresh_token) {
+        const result = this.db.prepare('DELETE FROM user_sessions WHERE refresh_token = ?').run(refresh_token);
+        return result.changes > 0;
+    }
+
+    async getVideoByUploadId(uploadId) {
+        // Join uploads and videos on video_id, return the video row for the given upload id
+        const row = this.db.prepare(`
+            SELECT v.* FROM uploads u
+            JOIN videos v ON u.video_id = v.id
+            WHERE u.id = ?
+        `).get(uploadId);
+        return row;
+    }
+
+    // SERIES
+    async createSeries(series) {
+        // Validate total episodes requirement
+        if (!series.total_episodes || series.total_episodes < 2) {
+            throw new Error('Series must have at least 2 episodes');
+        }
+        
+        const stmt = this.db.prepare(`INSERT INTO series (name, description, year, genre, country, director, cast, poster, total_episodes, status, uploader_user_id, is_public) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const result = stmt.run(
+            series.name,
+            series.description || null,
+            series.year || null,
+            series.genre || null,
+            series.country || null,
+            series.director || null,
+            series.cast || null,
+            series.poster || null,
+            series.total_episodes,
+            series.status || 'active',
+            series.uploader_user_id,
+            series.is_public ?? 1
+        );
+        return { id: result.lastInsertRowid, ...series };
+    }
+
+    async getSeriesById(id) {
+        return this.db.prepare('SELECT * FROM series WHERE id = ?').get(id);
+    }
+
+    async getSeriesByUserId(userId) {
+        return this.db.prepare('SELECT * FROM series WHERE uploader_user_id = ? ORDER BY created_at DESC').all(userId);
+    }
+
+    async updateSeries(id, updates) {
+        const fields = [];
+        const values = [];
+        for (const key of ['name', 'description', 'year', 'genre', 'country', 'director', 'cast', 'poster', 'total_episodes', 'status', 'is_public', 'thumbnail_url']) {
+            if (updates[key] !== undefined) {
+                fields.push(`${key} = ?`);
+                values.push(updates[key]);
+            }
+        }
+        if (fields.length === 0) return false;
+        fields.push('updated_at = ?');
+        values.push(new Date().toISOString());
+        values.push(id);
+        const sql = `UPDATE series SET ${fields.join(', ')} WHERE id = ?`;
+        const result = this.db.prepare(sql).run(...values);
+        return result.changes > 0;
+    }
+
+    async deleteSeries(id) {
+        const result = this.db.prepare('DELETE FROM series WHERE id = ?').run(id);
+        return result.changes > 0;
+    }
+
+    async listSeries(filter = {}) {
+        let sql = 'SELECT * FROM series WHERE 1=1';
+        const params = [];
+        
+        if (filter.uploader_user_id) {
+            sql += ' AND uploader_user_id = ?';
+            params.push(filter.uploader_user_id);
+        }
+        if (filter.is_public !== undefined) {
+            sql += ' AND is_public = ?';
+            params.push(filter.is_public);
+        }
+        if (filter.status) {
+            sql += ' AND status = ?';
+            params.push(filter.status);
+        }
+        if (filter.genre) {
+            sql += ' AND genre = ?';
+            params.push(filter.genre);
+        }
+        if (filter.year) {
+            sql += ' AND year = ?';
+            params.push(filter.year);
+        }
+        
+        sql += ' ORDER BY created_at DESC';
+        return this.db.prepare(sql).all(...params);
+    }
+
+    async getEpisodesBySeriesId(seriesId) {
+        return this.db.prepare('SELECT * FROM videos WHERE series_id = ? ORDER BY episode_number ASC').all(seriesId);
+    }
+
+    async getEpisodeBySeriesAndNumber(seriesId, episodeNumber) {
+        return this.db.prepare('SELECT * FROM videos WHERE series_id = ? AND episode_number = ?').get(seriesId, episodeNumber);
     }
 }
 

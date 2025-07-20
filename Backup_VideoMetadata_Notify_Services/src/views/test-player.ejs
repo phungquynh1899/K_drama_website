@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Streaming Test</title>
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet" />
+    
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .video-container {
+            margin: 20px 0;
+        }
+        
+        .video-js {
+            width: 100%;
+            height: 400px;
+        }
+        
+        .video-list {
+            margin-top: 30px;
+        }
+        
+        .video-item {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .video-item:hover {
+            background: #2a2a2a;
+        }
+        
+        .video-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .video-info {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .test-buttons {
+            margin: 20px 0;
+        }
+        
+        .test-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .test-btn:hover {
+            background: #ffed4e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HLS Video Streaming Test</h1>
+        
+        <div class="test-buttons">
+            <button class="test-btn" onclick="loadAvailableVideos()">Load Available Videos</button>
+            <button class="test-btn" onclick="testHLSStream()">Test HLS Stream</button>
+            <button class="test-btn" onclick="testMetadata()">Test Metadata</button>
+        </div>
+        
+        <div class="video-container">
+            <video 
+                id="videoPlayer" 
+                class="video-js vjs-default-skin vjs-big-play-centered"
+                controls 
+                preload="metadata"
+                data-setup='{
+                    "fluid": true,
+                    "responsive": true,
+                    "playbackRates": [0.5, 0.75, 1, 1.25, 1.5, 2]
+                }'
+            >
+                <p class="vjs-no-js">
+                    To view this video please enable JavaScript, and consider upgrading to a
+                    web browser that supports HTML5 video.
+                </p>
+            </video>
+        </div>
+        
+        <div class="video-list" id="videoList">
+            <h3>Available Videos</h3>
+            <p>Click "Load Available Videos" to see available HLS videos.</p>
+        </div>
+    </div>
+
+    <!-- Video.js JavaScript -->
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script>
+        let player;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Video.js player
+            player = videojs('videoPlayer', {
+                fluid: true,
+                responsive: true,
+                preload: 'metadata',
+                playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2]
+            });
+        });
+
+        async function loadAvailableVideos() {
+            try {
+                const response = await fetch('/api/v1/hls/videos');
+                const data = await response.json();
+                
+                const videoList = document.getElementById('videoList');
+                videoList.innerHTML = '<h3>Available Videos</h3>';
+                
+                if (data.data.videos.length === 0) {
+                    videoList.innerHTML += '<p>No videos with HLS support found.</p>';
+                    return;
+                }
+                
+                data.data.videos.forEach(video => {
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+                    videoItem.onclick = () => loadVideo(video.id);
+                    videoItem.innerHTML = `
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-info">
+                            Year: ${video.year || 'Unknown'} | 
+                            Genre: ${video.genre || 'Unknown'} | 
+                            Duration: ${video.duration ? Math.floor(video.duration / 60) + 'm' : 'Unknown'}
+                        </div>
+                    `;
+                    videoList.appendChild(videoItem);
+                });
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                alert('Error loading videos: ' + error.message);
+            }
+        }
+
+        async function loadVideo(videoId) {
+            try {
+                // Get video metadata
+                const metadataResponse = await fetch(`/api/v1/hls/metadata/${videoId}`);
+                const metadata = await metadataResponse.json();
+                
+                if (!metadata.data.hasHLS) {
+                    alert('This video does not have HLS support.');
+                    return;
+                }
+                
+                // Load HLS playlist
+                const hlsUrl = `/api/v1/hls/playlist/${videoId}`;
+                player.src({
+                    src: hlsUrl,
+                    type: 'application/x-mpegURL'
+                });
+                
+                console.log('Loaded video:', metadata.data.title);
+                console.log('HLS URL:', hlsUrl);
+                
+            } catch (error) {
+                console.error('Error loading video:', error);
+                alert('Error loading video: ' + error.message);
+            }
+        }
+
+        async function testHLSStream() {
+            // Test with the existing HLS video
+            const testVideoId = '1752246753559282700';
+            await loadVideo(testVideoId);
+        }
+
+        async function testMetadata() {
+            try {
+                const testVideoId = '1752246753559282700';
+                const response = await fetch(`/api/v1/hls/metadata/${testVideoId}`);
+                const data = await response.json();
+                
+                console.log('Video metadata:', data);
+                alert('Check console for metadata details');
+            } catch (error) {
+                console.error('Error testing metadata:', error);
+                alert('Error testing metadata: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html> 

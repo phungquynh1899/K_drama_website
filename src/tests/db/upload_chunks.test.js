@@ -10,12 +10,19 @@ describe('upload_chunks table CRUD', () => {
     // Create a user and upload to satisfy foreign keys
     const user = await db.createUser({ username: 'chunkuser', email: 'chunk@b.com', password_hash: 'pw', role: 'user', is_active: 1 });
     userId = user.id;
-    const upload = await db.createUpload({ user_id: userId, video_id: null, filename: 'file.mp4', total_size: 1000, total_chunks: 10, uploaded_chunks: [], status: 'pending' });
+    const upload = await db.createUpload({ id: 1234567890123456, user_id: userId, video_id: null, filename: 'file.mp4', total_size: 1000, total_chunks: 10, uploaded_chunks: [], status: 'pending' });
     uploadId = upload.id;
   });
 
   afterEach(() => {
     db.db.close();
+     //forcing _instance=null 
+     BetterSqliteDatabase._instance = null
+  });
+
+  afterAll(() => {
+    // Ensure singleton is reset after all tests in this file
+    BetterSqliteDatabase._instance = null;
   });
 
   test('Create upload_chunk', async () => {

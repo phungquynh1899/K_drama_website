@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="<%= description || 'Xem phim online chất lượng cao, cập nhật nhanh nhất' %>">
+    <meta name="keywords" content="<%= keywords || 'phim online, xem phim, phim hay, phim mới' %>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                </ul>
+            </nav>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <form id="searchForm" class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Tìm kiếm phim, diễn viên, thể loại..."
+                value="<%= locals.searchQuery || '' %>"
+            >
+            <button type="submit" class="search-btn">Tìm kiếm</button>
+        </form>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="movie" <%= locals.category === 'movie' ? 'selected' : '' %>>Phim Lẻ</option>
+                <option value="series" <%= locals.category === 'series' ? 'selected' : '' %>>Phim Bộ</option>
+            </select>
+            
+            <select id="genreFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="action" <%= locals.genre === 'action' ? 'selected' : '' %>>Hành động</option>
+                <option value="drama" <%= locals.genre === 'drama' ? 'selected' : '' %>>Tâm lý</option>
+                <option value="comedy" <%= locals.genre === 'comedy' ? 'selected' : '' %>>Hài</option>
+                <option value="horror" <%= locals.genre === 'horror' ? 'selected' : '' %>>Kinh dị</option>
+                <option value="romance" <%= locals.genre === 'romance' ? 'selected' : '' %>>Lãng mạn</option>
+                <option value="sci-fi" <%= locals.genre === 'sci-fi' ? 'selected' : '' %>>Khoa học viễn tưởng</option>
+                <option value="thriller" <%= locals.genre === 'thriller' ? 'selected' : '' %>>Giật gân</option>
+                <option value="animation" <%= locals.genre === 'animation' ? 'selected' : '' %>>Hoạt hình</option>
+            </select>
+            
+            <select id="countryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="us" <%= locals.country === 'us' ? 'selected' : '' %>>Mỹ</option>
+                <option value="kr" <%= locals.country === 'kr' ? 'selected' : '' %>>Hàn Quốc</option>
+                <option value="jp" <%= locals.country === 'jp' ? 'selected' : '' %>>Nhật Bản</option>
+                <option value="cn" <%= locals.country === 'cn' ? 'selected' : '' %>>Trung Quốc</option>
+                <option value="vn" <%= locals.country === 'vn' ? 'selected' : '' %>>Việt Nam</option>
+                <option value="th" <%= locals.country === 'th' ? 'selected' : '' %>>Thái Lan</option>
+            </select>
+            
+            <select id="yearFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="2025" <%= locals.year === '2025' ? 'selected' : '' %>>2025</option>
+                <option value="2024" <%= locals.year === '2024' ? 'selected' : '' %>>2024</option>
+                <option value="2023" <%= locals.year === '2023' ? 'selected' : '' %>>2023</option>
+                <option value="2022" <%= locals.year === '2022' ? 'selected' : '' %>>2022</option>
+                <option value="2021" <%= locals.year === '2021' ? 'selected' : '' %>>2021</option>
+                <option value="2020" <%= locals.year === '2020' ? 'selected' : '' %>>2020</option>
+            </select>
+            
+            <select id="durationFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="short" <%= locals.duration === 'short' ? 'selected' : '' %>>Dưới 30 phút</option>
+                <option value="medium" <%= locals.duration === 'medium' ? 'selected' : '' %>>30' - 1 tiếng</option>
+                <option value="long" <%= locals.duration === 'long' ? 'selected' : '' %>>1 - 1.5 tiếng</option>
+                <option value="very-long" <%= locals.duration === 'very-long' ? 'selected' : '' %>>Trên 1.5 tiếng</option>
+            </select>
+            
+            <select id="sortFilter" class="filter-select">
+                <option value="latest" <%= locals.sort === 'latest' ? 'selected' : '' %>>Ngày cập nhật</option>
+                <option value="release" <%= locals.sort === 'release' ? 'selected' : '' %>>Ngày phát hành</option>
+                <option value="rating" <%= locals.sort === 'rating' ? 'selected' : '' %>>Điểm đánh giá</option>
+                <option value="views" <%= locals.sort === 'views' ? 'selected' : '' %>>Lượt xem</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <% if (locals.scripts) { %>
+        <% scripts.forEach(function(script) { %>
+            <script src="<%= script %>"></script>
+        <% }); %>
+    <% } %>
+</body>
+</html> 

@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Upload video lên Video Website">
+    <meta name="keywords" content="upload video, tải lên video">
+    <style>
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .upload-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-header h1 {
+            color: #ffd700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .upload-form {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #0f0f0f;
+            color: #ffffff;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+        
+        .form-input::placeholder {
+            color: #666;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #0f0f0f;
+            color: #ffffff;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #0f0f0f;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #333;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: border-color 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #ffd700;
+        }
+        
+        .file-upload-area.dragover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+        
+        .file-upload-icon {
+            font-size: 3rem;
+            color: #888;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            color: #888;
+            margin-bottom: 1rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .upload-status {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .status-success {
+            background: #44ff44;
+            color: #000000;
+        }
+        
+        .status-error {
+            background: #ff4444;
+            color: #ffffff;
+        }
+        
+        .status-info {
+            background: #4444ff;
+            color: #ffffff;
+        }
+        
+        .file-info {
+            background: #0f0f0f;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .file-info h4 {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info p {
+            color: #888;
+            margin: 0.25rem 0;
+        }
+        
+        /* Upload dropdown styles */
+        .upload-dropdown {
+            position: relative;
+        }
+
+        .upload-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .upload-submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .upload-dropdown:hover .upload-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .upload-submenu li {
+            margin: 0;
+        }
+
+        .upload-submenu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .upload-submenu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .upload-container {
+                padding: 1rem;
+            }
+            
+            .upload-submenu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                background: transparent;
+                box-shadow: none;
+                margin-top: 0.5rem;
+            }
+            
+            .upload-submenu a {
+                padding: 0.5rem 1rem;
+                color: #888;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                    <li class="upload-dropdown">
+                        <a href="#" class="upload-toggle" style="color: #ffd700;">Upload ▼</a>
+                        <ul class="upload-submenu">
+                            <li><a href="/upload" style="color: #ffd700;">Upload Phim</a></li>
+                            <li><a href="/uploadSeries">Upload Phim Bộ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="upload-container">
+        <div class="upload-header">
+            <h1>Upload Video</h1>
+            <p>Tải lên video của bạn để chia sẻ với cộng đồng</p>
+        </div>
+        
+        <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+            <!-- Video Information -->
+            <div class="form-section">
+                <h3>Thông tin video</h3>
+                
+                <div class="form-group">
+                    <label for="title" class="form-label">Tiêu đề video *</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="form-input" 
+                        placeholder="Nhập tiêu đề video"
+                        required
+                    >
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category" class="form-label">Danh mục *</label>
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Chọn danh mục</option>
+                            <option value="movie">Phim lẻ</option>
+                            <option value="series">Phim bộ</option>
+                            <option value="short">Video ngắn</option>
+                            <option value="documentary">Tài liệu</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="genre" class="form-label">Thể loại *</label>
+                        <select id="genre" name="genre" class="form-select" required>
+                            <option value="">Chọn thể loại</option>
+                            <option value="action">Hành động</option>
+                            <option value="drama">Tâm lý</option>
+                            <option value="comedy">Hài</option>
+                            <option value="horror">Kinh dị</option>
+                            <option value="romance">Lãng mạn</option>
+                            <option value="sci-fi">Khoa học viễn tưởng</option>
+                            <option value="thriller">Giật gân</option>
+                            <option value="animation">Hoạt hình</option>
+                            <option value="documentary">Tài liệu</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="year" class="form-label">Năm phát hành</label>
+                        <input 
+                            type="number" 
+                            id="year" 
+                            name="year" 
+                            class="form-input" 
+                            placeholder="2024"
+                            min="1900"
+                            max="2030"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country" class="form-label">Quốc gia</label>
+                        <select id="country" name="country" class="form-select">
+                            <option value="">Chọn quốc gia</option>
+                            <option value="us">Mỹ</option>
+                            <option value="kr">Hàn Quốc</option>
+                            <option value="jp">Nhật Bản</option>
+                            <option value="cn">Trung Quốc</option>
+                            <option value="vn">Việt Nam</option>
+                            <option value="th">Thái Lan</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        class="form-textarea" 
+                        placeholder="Mô tả video của bạn..."
+                    ></textarea>
+                </div>
+            </div>
+            
+            <!-- File Upload -->
+            <div class="form-section">
+                <h3>Tải lên file</h3>
+                
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">
+                        Kéo thả file video vào đây hoặc <strong>click để chọn file</strong>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        Hỗ trợ: MP4, AVI, MOV, MKV (Tối đa 2GB)
+                    </div>
+                    <input type="file" id="videoFile" name="videoFile" class="file-input" accept="video/*" required>
+                </div>
+                
+                <div id="fileInfo" class="file-info" style="display: none;">
+                    <h4>Thông tin file</h4>
+                    <div id="fileDetails"></div>
+                </div>
+            </div>
+            
+            <!-- Thumbnail Upload -->
+            <div class="form-section">
+                <h3>Ảnh bìa (tùy chọn)</h3>
+                
+                <div class="file-upload-area" id="thumbnailUploadArea">
+                    <div class="file-upload-icon">🖼️</div>
+                    <div class="file-upload-text">
+                        Kéo thả ảnh bìa vào đây hoặc <strong>click để chọn file</strong>
+                    </div>
+                    <div style="color: #666; font-size: 14px;">
+                        Hỗ trợ: JPG, PNG, GIF (Tối đa 5MB)
+                    </div>
+                    <input type="file" id="thumbnailFile" name="thumbnailFile" class="file-input" accept="image/*">
+                </div>
+            </div>
+            
+            <!-- Upload Progress -->
+            <div id="uploadProgress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="uploadStatus" class="upload-status status-info">
+                    Đang chuẩn bị upload...
+                </div>
+            </div>
+            
+            <!-- Thumbnail Upload Progress -->
+            <div id="thumbnailProgress" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="thumbnailProgressFill"></div>
+                </div>
+                <div id="thumbnailStatus" class="upload-status status-info">
+                    Đang xử lý thumbnail...
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="upload-btn" id="submitBtn">
+                Upload Video
+            </button>
+        </form>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+    <script>
+        window.UPLOAD_API_BASE_URL = "<%= UPLOAD_API_BASE_URL %>";
+    </script>
+    <script>
+        // File upload handling
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const videoFileInput = document.getElementById('videoFile');
+        const thumbnailUploadArea = document.getElementById('thumbnailUploadArea');
+        const thumbnailFileInput = document.getElementById('thumbnailFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileDetails = document.getElementById('fileDetails');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressFill = document.getElementById('progressFill');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Video file handling
+        fileUploadArea.addEventListener('click', () => videoFileInput.click());
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                videoFileInput.files = files;
+                handleFileSelect(files[0]);
+            }
+        });
+        
+        videoFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+        
+        // Thumbnail file handling
+        thumbnailUploadArea.addEventListener('click', () => thumbnailFileInput.click());
+        thumbnailUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            thumbnailUploadArea.classList.add('dragover');
+        });
+        thumbnailUploadArea.addEventListener('dragleave', () => {
+            thumbnailUploadArea.classList.remove('dragover');
+        });
+        thumbnailUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            thumbnailUploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                thumbnailFileInput.files = files;
+            }
+        });
+        
+        function handleFileSelect(file) {
+            const allowedExtensions = ['.mp4', '.avi', '.mov', '.mkv'];
+            const fileName = file.name.toLowerCase();
+            const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+            if (!hasValidExtension) {
+                alert('Chỉ cho phép các định dạng video: mp4, avi, mov, mkv');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024 * 1024) { // 2GB
+                alert('File quá lớn. Vui lòng chọn file nhỏ hơn 2GB');
+                return;
+            }
+
+            if (!file.type.startsWith('video/')) {
+                alert('Vui lòng chọn file video hợp lệ');
+                return;
+            }
+
+            const parts = fileName.split('.');
+            if (parts.length > 2) {
+                alert('Tên file không hợp lệ (không được có nhiều hơn một dấu chấm).');
+                return;
+            }
+            
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            const fileType = file.type;
+            
+            fileDetails.innerHTML = `
+                <p><strong>Tên file:</strong> ${file.name}</p>
+                <p><strong>Kích thước:</strong> ${fileSize} MB</p>
+                <p><strong>Loại file:</strong> ${fileType}</p>
+            `;
+            
+            fileInfo.style.display = 'block';
+        }
+        
+        // Helper: get access token from localStorage
+        function getAccessToken() {
+            return localStorage.getItem('accessToken');
+        }
+        // Helper: get refresh token from localStorage
+        function getRefreshToken() {
+            return localStorage.getItem('refreshToken');
+        }
+        // Helper: refresh access token using refresh token
+        async function refreshAccessToken() {
+            const refreshToken = getRefreshToken();
+            if (!refreshToken) return null;
+            const res = await fetch('/api/v1/auth/refresh', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
+                    return data.accessToken;
+                }
+            }
+            return null;
+        }
+        // Helper: fetch with auto token and refresh logic
+        async function authFetch(url, options = {}, isChunk = false) {
+            let token = getAccessToken();
+            options.headers = options.headers || {};
+            if (token) {
+                options.headers['Authorization'] = 'Bearer ' + token;
+            }
+            let res = await fetch(url, options);
+            // If unauthorized and refresh token exists, try to refresh and retry
+            if (res.status === 401 && getRefreshToken()) {
+                token = await refreshAccessToken();
+                if (token) {
+                    options.headers['Authorization'] = 'Bearer ' + token;
+                    // For chunk upload, need to recreate FormData (body is already read)
+                    if (isChunk && options.body instanceof FormData) {
+                        // Rebuild FormData
+                        const oldForm = options.body;
+                        const newForm = new FormData();
+                        for (const [key, value] of oldForm.entries()) {
+                            newForm.append(key, value);
+                        }
+                        options.body = newForm;
+                    }
+                    res = await fetch(url, options);
+                }
+            }
+            return res;
+        }
+        
+        // script to chunking video 
+         function generateUploadId() {
+    const timestamp = Date.now(); // milliseconds since epoch
+    const randomPart = Math.floor(Math.random() * 1000); // 3 random digits
+    return timestamp * 1000 + randomPart; // always safe (max 16 digits)
+}
+
+    
+    const CHUNK_SIZE_MB = 64;
+    const CHUNK_SIZE = CHUNK_SIZE_MB * 1024 * 1024;
+    
+    async function cancelUpload(userId, uploadId) {
+    try {
+        await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/cancelUpload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, uploadId })
+        });
+    } catch (e) {
+        // Optionally log or ignore
+    }
+}
+
+    async function uploadFileInChunks(file) {
+        const uploadId = generateUploadId();
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        const total_size = file.size;
+
+        // Get video info fields
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const genre = document.getElementById('genre').value;
+        let year = document.getElementById('year').value;
+        let country = document.getElementById('country').value;
+        let description = document.getElementById('description').value;
+        // Set non-compulsory fields to 'unknown' if empty
+        if (!year) year = 'unknown';
+        if (!country) country = 'unknown';
+        if (!description) description = 'unknown';
+        let userId = localStorage.getItem('userId')
+        for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+            let start = chunkIndex * CHUNK_SIZE;
+            let end = Math.min(start + CHUNK_SIZE, file.size);
+            let chunk = file.slice(start, end);
+
+            let success = false;
+            let attempt = 0;
+           
+            while (!success && attempt < 3) { // Retry up to 3 times
+                try {
+                    const formData = new FormData();
+                    formData.append('uploadId', uploadId);
+                    formData.append('chunkIndex', chunkIndex);
+                    formData.append('totalChunks', totalChunks);
+                    formData.append('filename', file.name);
+                    formData.append('chunk', chunk, file.name + `.part${chunkIndex}`);
+                    // Add video info fields to each chunk upload
+                    formData.append('title', title);
+                    formData.append('category', category);
+                    formData.append('genre', genre);
+                    formData.append('year', year);
+                    formData.append('country', country);
+                    formData.append('description', description);
+                    formData.append('total_size', total_size);
+                    formData.append('userId', userId)
+                    formData.append('fileType', file.type); // Add file type to FormData
+                    
+                    const response = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/chunk', {
+                        method: 'POST',
+                        body: formData
+                    }, true);
+
+                    const data = await response.json();
+                    if (response.ok) {
+                        console.log(`Chunk ${chunkIndex} uploaded`);
+                        success = true;
+                    } else if (data.message === 'Chunk already uploaded') {
+                        success = true;
+                    } else {
+                        throw new Error(data.error || 'Unknown error');
+                    }
+                } catch (err) {
+                    attempt++;
+                    console.warn(`Retrying chunk ${chunkIndex}, attempt ${attempt}: ${err.message}`);
+                    await new Promise(res => setTimeout(res, 1000 * attempt));
+                }
+            }
+            if (!success) {
+                await cancelUpload(userId, uploadId);
+                alert('Upload failed. Please try again later.');
+                return;
+            }
+        }
+        
+        // All chunks uploaded, now verify completion
+        const completeRes = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uploadId,
+                totalChunks,
+                filename: file.name,
+                filetype: file.type,
+                // Add video info fields to complete request
+                title,
+                category,
+                genre,
+                year,
+                country,
+                description,
+                total_size,
+                userId
+            })
+        });
+        const completeData = await completeRes.json();
+        if (completeRes.ok) {
+            // If thumbnail was selected, upload it now
+            const thumbnailFile = thumbnailFileInput.files[0];
+            if (thumbnailFile && completeData.videoId) {
+                await uploadThumbnail(thumbnailFile, completeData.videoId);
+            }
+            
+            alert('Upload complete! Video and thumbnail uploaded successfully.');
+        } else {
+            alert('Failed to complete upload: ' + (completeData.error || 'Unknown error'));
+        }
+    }
+    
+    // Function to upload thumbnail
+    async function uploadThumbnail(thumbnailFile, videoId) {
+        try {
+            // Show thumbnail upload progress
+            const thumbnailProgress = document.getElementById('thumbnailProgress');
+            const thumbnailProgressFill = document.getElementById('thumbnailProgressFill');
+            const thumbnailStatus = document.getElementById('thumbnailStatus');
+            
+            thumbnailProgress.style.display = 'block';
+            thumbnailProgressFill.style.width = '0%';
+            thumbnailStatus.textContent = 'Đang xử lý thumbnail...';
+            
+            const formData = new FormData();
+            formData.append('thumbnail', thumbnailFile);
+            formData.append('videoId', videoId);
+            formData.append('userId', localStorage.getItem('userId'));
+            
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 90) progress = 90;
+                thumbnailProgressFill.style.width = progress + '%';
+                
+                if (progress < 30) {
+                    thumbnailStatus.textContent = 'Đang kiểm tra file...';
+                } else if (progress < 60) {
+                    thumbnailStatus.textContent = 'Đang xử lý hình ảnh...';
+                } else {
+                    thumbnailStatus.textContent = 'Đang lưu thumbnail...';
+                }
+            }, 200);
+            
+            const response = await authFetch('/api/v1/thumbnail/upload', {
+                method: 'POST',
+                body: formData
+            });
+            
+            clearInterval(progressInterval);
+            thumbnailProgressFill.style.width = '100%';
+            thumbnailStatus.textContent = 'Hoàn thành!';
+            thumbnailStatus.className = 'upload-status status-success';
+            
+            const data = await response.json();
+            if (response.ok) {
+                console.log('Thumbnail uploaded successfully:', data.thumbnail.url);
+                
+                // Hide progress after a delay
+                setTimeout(() => {
+                    thumbnailProgress.style.display = 'none';
+                }, 2000);
+                
+                return data.thumbnail;
+            } else {
+                console.error('Thumbnail upload failed:', data.error);
+                thumbnailStatus.textContent = 'Lỗi: ' + data.error;
+                thumbnailStatus.className = 'upload-status status-error';
+                return null;
+            }
+        } catch (error) {
+            console.error('Thumbnail upload error:', error);
+            const thumbnailStatus = document.getElementById('thumbnailStatus');
+            thumbnailStatus.textContent = 'Lỗi: ' + error.message;
+            thumbnailStatus.className = 'upload-status status-error';
+            return null;
+        }
+    }
+    
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('videoFile');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Please select a file');
+            return;
+        }
+        uploadFileInChunks(file);
+    });
+        // document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        //     e.preventDefault();
+            
+        //     const formData = new FormData(this);
+        //     const videoFile = videoFileInput.files[0];
+            
+        //     if (!videoFile) {
+        //         alert('Vui lòng chọn file video');
+        //         return;
+        //     }
+            
+        //     // Show progress
+        //     uploadProgress.style.display = 'block';
+        //     submitBtn.disabled = true;
+        //     submitBtn.textContent = 'Đang upload...';
+            
+        //     // Simulate upload progress
+        //     let progress = 0;
+        //     const interval = setInterval(() => {
+        //         progress += Math.random() * 10;
+        //         if (progress > 100) progress = 100;
+                
+        //         progressFill.style.width = progress + '%';
+                
+        //         if (progress < 30) {
+        //             uploadStatus.textContent = 'Đang xử lý file...';
+        //         } else if (progress < 60) {
+        //             uploadStatus.textContent = 'Đang upload...';
+        //         } else if (progress < 90) {
+        //             uploadStatus.textContent = 'Đang tạo thumbnail...';
+        //         } else {
+        //             uploadStatus.textContent = 'Hoàn thành!';
+        //             uploadStatus.className = 'upload-status status-success';
+        //         }
+                
+        //         if (progress >= 100) {
+        //             clearInterval(interval);
+        //             setTimeout(() => {
+        //                 fetch('/api/v1/upload/', {
+        //                     method: 'POST',
+        //                     body: formData
+        //                 })
+        //                 .then(response => response.json())
+        //                 .then(data => {
+        //                     if (data.file) {
+        //                         alert('Upload thành công!');
+        //                         window.location.href = '/';
+        //                     } else {
+        //                         alert('Upload thất bại: ' + (data.error || 'Unknown error'));
+        //                     }
+        //                 })
+        //                 .catch(error => {
+        //                     console.log('Lỗi upload: ' + error.message);
+        //                     alert('Lỗi upload: ' + error.message);
+        //                 });
+        //             }, 1000);
+        //         }
+        //     }, 200);
+        // });
+        
+        // Form validation
+        function validateForm() {
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value;
+            const genre = document.getElementById('genre').value;
+            const videoFile = videoFileInput.files[0];
+            
+            if (!title) {
+                alert('Vui lòng nhập tiêu đề video');
+                return false;
+            }
+            
+            if (!category) {
+                alert('Vui lòng chọn danh mục');
+                return false;
+            }
+            
+            if (!genre) {
+                alert('Vui lòng chọn thể loại');
+                return false;
+            }
+            
+            if (!videoFile) {
+                alert('Vui lòng chọn file video');
+                return false;
+            }
+            
+            return true;
+        }
+    </script>
+</body>
+</html> 

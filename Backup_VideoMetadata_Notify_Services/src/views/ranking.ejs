@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xếp hạng phim - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Xếp hạng phim theo lượt xem">
+    <meta name="keywords" content="xếp hạng phim, phim hot, phim thịnh hành">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                </ul>
+            </nav>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Search Container -->
+    <div class="search-container">
+        <form id="searchForm" class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Tìm kiếm phim, diễn viên, thể loại..."
+            >
+            <button type="submit" class="search-btn">Tìm kiếm</button>
+        </form>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <select id="categoryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="movie">Phim Lẻ</option>
+                <option value="series">Phim Bộ</option>
+            </select>
+            
+            <select id="genreFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="action">Hành động</option>
+                <option value="drama">Tâm lý</option>
+                <option value="comedy">Hài</option>
+                <option value="horror">Kinh dị</option>
+                <option value="romance">Lãng mạn</option>
+                <option value="sci-fi">Khoa học viễn tưởng</option>
+                <option value="thriller">Giật gân</option>
+                <option value="animation">Hoạt hình</option>
+            </select>
+            
+            <select id="countryFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="us">Mỹ</option>
+                <option value="kr">Hàn Quốc</option>
+                <option value="jp">Nhật Bản</option>
+                <option value="cn">Trung Quốc</option>
+                <option value="vn">Việt Nam</option>
+                <option value="th">Thái Lan</option>
+            </select>
+            
+            <select id="yearFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+                <option value="2023">2023</option>
+                <option value="2022">2022</option>
+                <option value="2021">2021</option>
+                <option value="2020">2020</option>
+            </select>
+            
+            <select id="durationFilter" class="filter-select">
+                <option value="">- Tất cả -</option>
+                <option value="short">Dưới 30 phút</option>
+                <option value="medium">30' - 1 tiếng</option>
+                <option value="long">1 - 1.5 tiếng</option>
+                <option value="very-long">Trên 1.5 tiếng</option>
+            </select>
+            
+            <select id="sortFilter" class="filter-select">
+                <option value="latest">Ngày cập nhật</option>
+                <option value="release">Ngày phát hành</option>
+                <option value="rating">Điểm đánh giá</option>
+                <option value="views">Lượt xem</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <h1 class="section-title">Xếp hạng phim</h1>
+        
+        <!-- Ranking Tabs -->
+        <div class="ranking-tabs">
+            <button class="ranking-tab active" data-period="week">Tuần này</button>
+            <button class="ranking-tab" data-period="month">Tháng này</button>
+            <button class="ranking-tab" data-period="year">Năm nay</button>
+            <button class="ranking-tab" data-period="all">Tất cả thời gian</button>
+        </div>
+
+        <!-- Ranking Content -->
+        <div class="ranking-content">
+            <!-- Weekly Rankings -->
+            <div id="week-rankings" class="ranking-section">
+                <h2 class="section-title">Top phim tuần này</h2>
+                <div class="movie-grid">
+                    <div class="movie-card" onclick="window.location.href='/movie/1'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #ffd700; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">1</span>
+                                <h3 class="movie-title">Thunderbolts*</h3>
+                            </div>
+                            <p class="movie-meta">2025 • 2h 15m • Hành động</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>8.5</span>
+                                <span style="margin-left: 10px; color: #888;">1.2M lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/2'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #c0c0c0; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">2</span>
+                                <h3 class="movie-title">Ballerina</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 1h 45m • Hành động</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>8.2</span>
+                                <span style="margin-left: 10px; color: #888;">980K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/series/3'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #cd7f32; color: #000; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">3</span>
+                                <h3 class="movie-title">Squid Game</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 9 tập • Giật gân</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>9.1</span>
+                                <span style="margin-left: 10px; color: #888;">850K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/4'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #1a1a1a; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">4</span>
+                                <h3 class="movie-title">Final Destination Bloodlines</h3>
+                            </div>
+                            <p class="movie-meta">2025 • 1h 55m • Kinh dị</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>7.8</span>
+                                <span style="margin-left: 10px; color: #888;">720K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/5'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #1a1a1a; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">5</span>
+                                <h3 class="movie-title">Heads of State</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 1h 50m • Hành động</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>7.5</span>
+                                <span style="margin-left: 10px; color: #888;">650K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/6'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #1a1a1a; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">6</span>
+                                <h3 class="movie-title">Stand Your Ground</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 1h 40m • Hành động</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>7.2</span>
+                                <span style="margin-left: 10px; color: #888;">580K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/7'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #1a1a1a; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">7</span>
+                                <h3 class="movie-title">Dora and the Search for Sol Dorado</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 1h 35m • Phiêu lưu</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>6.8</span>
+                                <span style="margin-left: 10px; color: #888;">520K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="movie-card" onclick="window.location.href='/movie/8'">
+                        <div class="movie-poster">
+                            <span>Không có ảnh</span>
+                        </div>
+                        <div class="movie-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="background: #1a1a1a; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px;">8</span>
+                                <h3 class="movie-title">The Ballad of Wallis Island</h3>
+                            </div>
+                            <p class="movie-meta">2024 • 1h 45m • Tâm lý</p>
+                            <div class="movie-rating">
+                                <span>★</span>
+                                <span>7.0</span>
+                                <span style="margin-left: 10px; color: #888;">480K lượt xem</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Rankings (hidden by default) -->
+            <div id="month-rankings" class="ranking-section" style="display: none;">
+                <h2 class="section-title">Top phim tháng này</h2>
+                <div class="movie-grid">
+                    <!-- Monthly ranking content will be loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Yearly Rankings (hidden by default) -->
+            <div id="year-rankings" class="ranking-section" style="display: none;">
+                <h2 class="section-title">Top phim năm nay</h2>
+                <div class="movie-grid">
+                    <!-- Yearly ranking content will be loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- All Time Rankings (hidden by default) -->
+            <div id="all-rankings" class="ranking-section" style="display: none;">
+                <h2 class="section-title">Top phim tất cả thời gian</h2>
+                <div class="movie-grid">
+                    <!-- All time ranking content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script>
+        // Ranking tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const rankingTabs = document.querySelectorAll('.ranking-tab');
+            const rankingSections = document.querySelectorAll('.ranking-section');
+            
+            rankingTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    rankingTabs.forEach(t => t.classList.remove('active'));
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all ranking sections
+                    rankingSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show the corresponding section
+                    const period = this.dataset.period;
+                    const targetSection = document.getElementById(period + '-rankings');
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                    }
+                    
+                    // Load ranking data for the selected period
+                    loadRankingData(period);
+                });
+            });
+            
+            function loadRankingData(period) {
+                console.log('Loading ranking data for period:', period);
+                // This would typically make an AJAX call to load ranking data
+                // For now, we'll just show a loading message for non-week periods
+                if (period !== 'week') {
+                    const targetSection = document.getElementById(period + '-rankings');
+                    if (targetSection) {
+                        const movieGrid = targetSection.querySelector('.movie-grid');
+                        if (movieGrid) {
+                            movieGrid.innerHTML = '<div class="loading">Đang tải dữ liệu xếp hạng...</div>';
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

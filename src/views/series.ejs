@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phim bộ - Video Website</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Xem phim bộ online chất lượng cao, cập nhật nhanh nhất">
+    <meta name="keywords" content="phim bộ, phim online, xem phim, phim hay, phim mới">
+    <style>
+        /* Dropdown styles for user menu */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        .user-email {
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .user-menu:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0.5rem 0;
+        }
+
+        /* Upload dropdown styles */
+        .upload-dropdown {
+            position: relative;
+        }
+
+        .upload-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .upload-submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .upload-dropdown:hover .upload-submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .upload-submenu li {
+            margin: 0;
+        }
+
+        .upload-submenu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .upload-submenu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Enhanced movie card styles */
+        .movie-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .movie-poster {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-poster img {
+            transform: scale(1.05);
+        }
+
+        .movie-poster .no-image {
+            color: #666;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .movie-meta {
+            color: #888;
+            font-size: 0.85rem;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #ffd700;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            color: #ffd700;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: #888;
+            font-size: 1.2rem;
+        }
+
+        .series-count {
+            color: #ffd700;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .user-email {
+                display: none;
+            }
+            
+            .upload-submenu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                background: transparent;
+                box-shadow: none;
+                margin-top: 0.5rem;
+            }
+            
+            .upload-submenu a {
+                padding: 0.5rem 1rem;
+                color: #888;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .movie-poster {
+                height: 220px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">VideoWeb</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/movies">Phim lẻ</a></li>
+                    <li><a href="/series">Phim bộ</a></li>
+                    <li><a href="/ranking">Xếp hạng</a></li>
+                    <li><a href="/search">Tìm kiếm</a></li>
+                    <li class="upload-dropdown">
+                        <a href="#" class="upload-toggle">Upload ▼</a>
+                        <ul class="upload-submenu">
+                            <li><a href="/upload">Upload Phim</a></li>
+                            <li><a href="/uploadSeries">Upload Phim Bộ</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <!-- Login/Register links (shown when not authenticated) -->
+                <div data-auth="login-link" style="display: none;">
+                    <a href="/auth/login" style="color: #ffffff; text-decoration: none; padding: 8px 16px; border: 1px solid #ffffff; border-radius: 20px; transition: all 0.3s ease;">Đăng nhập</a>
+                    <a href="/auth/register" style="color: #ffffff; text-decoration: none; padding: 8px 16px; background: #ffd700; color: #000; border-radius: 20px; transition: all 0.3s ease;">Đăng ký</a>
+                </div>
+                
+                <!-- User menu (shown when authenticated) -->
+                <div data-auth="user-info" style="display: none;">
+                    <div class="user-menu">
+                        <div class="user-avatar">U</div>
+                        <span class="user-email">user@example.com</span>
+                        <div class="dropdown-menu">
+                            <a href="/dashboard" class="dropdown-item">Dashboard</a>
+                            <a href="/profile" class="dropdown-item">Hồ sơ</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="AuthManager.logout()">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="mobileMenuBtn" class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>Phim bộ</h1>
+            <p>Khám phá bộ sưu tập phim bộ chất lượng cao</p>
+        </div>
+
+        <!-- Series Section -->
+        <section>
+            <div class="series-count">
+                Tổng cộng: <%= series.length %> phim bộ
+            </div>
+            <div class="movie-grid">
+                <% if (typeof series !== 'undefined' && series.length > 0) { %>
+                    <% series.forEach(function(seriesItem) { %>
+                        <div class="movie-card" onclick="window.location.href='/series/<%= seriesItem.id %>'">
+                            <div class="movie-poster">
+                                <% if (seriesItem.thumbnail_url) { %>
+                                    <img src="<%= seriesItem.thumbnail_url %>" alt="<%= seriesItem.title %>" loading="lazy">
+                                <% } else if (seriesItem.poster) { %>
+                                    <img src="<%= seriesItem.poster %>" alt="<%= seriesItem.title %>" loading="lazy">
+                                <% } else { %>
+                                    <div class="no-image">
+                                        <span>Không có ảnh</span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <div class="movie-info">
+                                <h3 class="movie-title"><%= seriesItem.title %></h3>
+                                <p class="movie-meta">
+                                    <%= seriesItem.year || 'N/A' %> • <%= seriesItem.episodeCount || 'N/A' %> tập • <%= seriesItem.genre || 'N/A' %>
+                                </p>
+                                <div class="movie-rating">
+                                    <span>★</span>
+                                    <span><%= seriesItem.rating || 'N/A' %></span>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div style="text-align: center; grid-column: 1 / -1; padding: 3rem; color: #888;">
+                        <h3>Chưa có phim bộ nào</h3>
+                        <p>Hãy quay lại sau để xem các phim bộ mới nhất!</p>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1a1a1a; padding: 2rem 0; margin-top: 3rem; text-align: center; color: #888;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <p>&copy; 2025 Video Website. Tất cả quyền được bảo lưu.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Website chỉ phục vụ mục đích giải trí. Chúng tôi không sở hữu bất kỳ nội dung video nào.
+            </p>
+        </div>
+    </footer>
+
+    <script src="/js/auth.js"></script>
+    <script src="/js/main.js"></script>
+    <script>
+        // Initialize auth UI when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait for AuthManager to be available
+            if (typeof AuthManager !== 'undefined') {
+                await AuthManager.updateAuthUI();
+            }
+        });
+    </script>
+</body>
+</html> 

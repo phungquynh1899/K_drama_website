@@ -1,2 +1,4 @@
 node_modules
 .env
+mydb.sqlite
+nginx-hls.conf

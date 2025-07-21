@@ -51,10 +51,10 @@ app.use('/api/v1/user/', userRouter)
 app.use('/api/v1/admin/', adminRouter)
 //nhận file từ user tải lên máy server A tạm thời 
 // app.use('/api/v1/upload/', uploadRouter)
-app.use('/api/v1/series/', seriesRouter)
+app.use('/api/v1/seriesInfo/', seriesRouter)
 app.use('/api/v1/thumbnail/', thumbnailRouter)
 //gửi file từ server A sang cho server B
-app.use('/api/v1/transfer/', transferRouter)
+// app.use('/api/v1/transfer/', transferRouter)
 app.use('/api/v1/metadata/', videometadataRouter)
 //thumbnail management
 app.use('/', frontendRouter) 

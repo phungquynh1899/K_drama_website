@@ -4,7 +4,7 @@
 // database 
 // error handling 
 // set up view engine (nếu cần ejs)
-
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -22,9 +22,9 @@ const compression = require('compression');
 //
 const uploadRouter = require('./routes/upload/upload.router.js')
 // const transferRouter = require('./routes/transfer');
-const emailRouter = require('./routes/email');
-const videometadataRouter = require('./routes/videometadata');
-const streamRouter = require('./routes/videostreaming/stream.router.js')
+// const emailRouter = require('./routes/email');
+// const videometadataRouter = require('./routes/videometadata');
+// const streamRouter = require('./routes/videostreaming/stream.router.js')
 const hlsRouter = require('./routes/videostreaming/hls.router.js')
 const backupRouter = require('./routes/backup/backup.router.js')
 
@@ -50,11 +50,11 @@ require('./db/BetterSqliteDatabase.js')
 app.use('/api/v1/upload/', uploadRouter)
 // app.use('/', frontendRouter) // Frontend routes
 // app.use('/api/v1/transfer/', transferRouter);
-app.use('/api/v1/email/', emailRouter);
-app.use('/api/v1/videometadata', videometadataRouter);
+// app.use('/api/v1/email/', emailRouter);
+// app.use('/api/v1/videometadata', videometadataRouter);
 // app.use('/api/v1/stream/', streamRouter)
 app.use('/api/v1/stream/hls/', hlsRouter)
-app.use('/api/v1/backup/', backupRouter)
+app.use('/api/v1/backup-sender/', backupRouter)
 
 
 //error handling

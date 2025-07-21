@@ -713,7 +713,7 @@
                     return;
                 }
                 
-                const response = await authFetch(`/api/v1/series/user/${userId}`);
+                const response = await authFetch(`/api/v1/seriesInfo/user/${userId}`);
                 if (response.ok) {
                     const series = await response.json();
                     populateSeriesSelect(series);
@@ -784,7 +784,7 @@
         // Get uploaded episodes count for a series
         async function getUploadedEpisodesCount(seriesId) {
             try {
-                const response = await authFetch(`/api/v1/series/${seriesId}/episodes`);
+                const response = await authFetch(`/api/v1/seriesInfo/${seriesId}/episodes`);
                 if (response.ok) {
                     const episodes = await response.json();
                     return episodes.length;
@@ -1064,7 +1064,7 @@
                             formData.append('total_episodes', document.getElementById('totalEpisodes').value);
                         }
 
-                        const response = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/series-chunk', {
+                        const response = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/series-chunk', {
                             method: 'POST',
                             body: formData
                         }, true);
@@ -1092,7 +1092,7 @@
             }
             
             // All chunks uploaded, now verify completion
-            const completeRes = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/series-complete', {
+            const completeRes = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/series-complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1202,7 +1202,7 @@
     
     async function cancelUpload(userId, uploadId) {
         try {
-            await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/cancelUpload', {
+            await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/cancelUpload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId, uploadId })

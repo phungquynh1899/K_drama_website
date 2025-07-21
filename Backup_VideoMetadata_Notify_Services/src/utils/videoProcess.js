@@ -96,7 +96,7 @@ async function processUploadedVideo({ uploadId, totalChunks, filename, userId, v
     const backupSizeInfo = backupService.calculateRequiredBackupSize(videoId);
     // Round up to the next MB for requireEmptyDiskSpace
     const requireEmptyDiskSpace = Math.ceil(backupSizeInfo.sizeMB) + 'MB';
-    const readyUrl = 'http://localhost:3002/api/v1/backup/readyForBackup'; // Replace with actual sender endpoint
+    const readyUrl = process.env.BACKUP_SENDER_SERVER + `/api/v1/backup-sender/readyForBackup`; // Replace with actual sender endpoint
     await backupService.pushBackupJob({
       requireEmptyDiskSpace,
       videoId,

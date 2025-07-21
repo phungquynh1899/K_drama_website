@@ -5,9 +5,9 @@ const checkDiskSpace = require('check-disk-space').default;
 const path = require('path');
 const os = require('os');
 
-const connection = { host: 'localhost', port: 6379 };
-
-const RECEIVER_BASE_URL = 'http://localhost:3003'; // Change to your actual host
+const connection = { host: process.env.REDIS_HOST, port: process.env.REDIS_PORT };
+//file này không thể đọc dữ liệu từ .env file, nên bát buộc viết tay 
+const RECEIVER_BASE_URL = "http://localhost:3003"; // Change to your actual host
 
 const backupWorker = new Worker('backup', async job => {
   console.log(`🔄 Processing job ${job.id} (attempt ${job.attemptsMade + 1}/${job.opts.attempts})`);
@@ -30,6 +30,7 @@ const backupWorker = new Worker('backup', async job => {
     linkToReceive: `${RECEIVER_BASE_URL}/api/v1/backup/receive`,
     linkToNoticeThatBackupComplete: `${RECEIVER_BASE_URL}/api/v1/backup/complete`
   };
+  console.log(payload)
 
   await axios.post(linkToNoticeThatYouAreReadyToReceiveBackup, payload);
 

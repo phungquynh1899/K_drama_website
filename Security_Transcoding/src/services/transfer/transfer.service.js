@@ -16,7 +16,7 @@ const BetterSqliteDatabase = require('../../db/BetterSqliteDatabase');
  */
 async function sendCancelJobRequest(uploadId, userId, reason, totalChunks, error, failedChunkIndex = null) {
     try {
-        const cancelUrl = `http://localhost:3002/api/v1/upload/cancelJob`;
+        const cancelUrl = process.env.TRANSCODE_SERVER_HOST + `/api/v1/upload/cancelJob`;
         const cancelBody = {
             uploadId,
             userId,
@@ -87,7 +87,7 @@ async function sendChunksToServerB(uploadId, userId, serverBChunkUrl, serverBCom
                 'X-Chunk-Index': chunkIndex
             };
 
-            const targetUrl = `http://localhost:3002/api/v1/upload${serverBChunkUrl}`;
+            const targetUrl = process.env.TRANSCODE_SERVER_HOST + `/api/v1/upload${serverBChunkUrl}`;
 
             // Retry logic
             let attempt = 0;
@@ -152,7 +152,7 @@ async function sendChunksToServerB(uploadId, userId, serverBChunkUrl, serverBCom
         const filename = video.metadata.original_filename;
 
         // 2. After all chunks are sent, notify /complete endpoint
-        const completeUrl = `http://localhost:3002/api/v1/upload${serverBCompleteUrl}`;
+        const completeUrl = process.env.TRANSCODE_SERVER_HOST + `/api/v1/upload${serverBCompleteUrl}`;
         try {
             const completeBody = {
                 uploadId,

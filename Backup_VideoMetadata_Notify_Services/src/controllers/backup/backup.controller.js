@@ -19,6 +19,9 @@ exports.readyForBackup = async (req, res, next) => {
       return res.status(400).json({ error: 'Missing required fields: videoId, linkToReceive, linkToNoticeThatBackupComplete. Job re-queued.' });
     }
 
+    console.log("link to receiver" + linkToReceive)
+    console.log("link to complete" + linkToNoticeThatBackupComplete)
+
     // 1. Find all .m3u8 and .ts files in public/hls/{videoId}
     const videoDir = path.join(__dirname, '../../public/hls', String(videoId));
     if (!fs.existsSync(videoDir)) {
@@ -61,7 +64,7 @@ exports.readyForBackup = async (req, res, next) => {
           if (attempt === 3) {
             // After 3 failed attempts to upload this file, call cancelJob and let job fail
             try {
-              await axios.post(`http://localhost:3003/api/v1/upload/cancelJob`, {
+              await axios.post(process.env.BACKUP_RECEIVER_SERVER + `/api/v1/backup/cancelJob`, {
                 videoId: String(videoId),
                 reason: 'Backup upload failed after 3 retries',
                 error: `Failed to upload file: ${fileName} after 3 attempts`,
@@ -99,7 +102,7 @@ exports.readyForBackup = async (req, res, next) => {
           if (attempt === 3) {
             // After 3 failed attempts to notify receiver, call cancelJob and let job fail
             try {
-              await axios.post(`http://localhost:3003/api/v1/upload/cancelJob`, {
+              await axios.post(process.env.BACKUP_RECEIVER_SERVER + `/api/v1/backup/cancelJob`, {
                 videoId: String(videoId),
                 reason: 'Failed to notify receiver of backup completion after 3 retries',
                 error: `Failed to notify receiver at ${linkToNoticeThatBackupComplete}`,
@@ -119,7 +122,7 @@ exports.readyForBackup = async (req, res, next) => {
         if (attempt === 3) {
           // After 3 failed attempts to notify receiver, call cancelJob and let job fail
           try {
-            await axios.post(`${req.protocol}://${req.get('host')}/api/upload/cancelJob`, {
+            await axios.post(process.env.BACKUP_RECEIVER_SERVER + `/api/backup/cancelJob`, {
               videoId: String(videoId),
               reason: 'Failed to notify receiver of backup completion after 3 retries',
               error: `Failed to notify receiver at ${linkToNoticeThatBackupComplete}: ${err.message}`,

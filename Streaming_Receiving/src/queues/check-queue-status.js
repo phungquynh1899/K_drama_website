@@ -1,6 +1,6 @@
 const { Queue } = require('bullmq');
 
-const connection = { host: process.env.REDIS_HOST, port: process.env.PORT };
+const connection = { host: '192.168.1.34', port: 6379 };
 
 async function checkQueueStatus() {
   const queue = new Queue('backup', { connection });

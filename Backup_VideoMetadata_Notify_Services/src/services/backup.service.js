@@ -5,7 +5,7 @@ const path = require('path');
 const { getFolderSizeSync, formatBytes } = require('../utils/diskSpace.util');
 
 // Configuration (replace with your actual config or env variables)
-const REDIS_OPTIONS = { host: '192.168.1.34', port: 6379 };
+const REDIS_OPTIONS = { host: '192.168.1.145', port: 6379 };
 const BACKUP_QUEUE_NAME = 'backup';
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;

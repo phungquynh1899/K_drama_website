@@ -5,7 +5,7 @@ const checkDiskSpace = require('check-disk-space').default;
 const path = require('path');
 const os = require('os');
 
-const connection = { host: '192.168.1.34', port: 6379 };
+const connection = { host: '192.168.1.145', port: 6379 };
 //file này không thể đọc dữ liệu từ .env file, nên bát buộc viết tay 
 // const RECEIVER_BASE_URL = "http://localhost:3003"; // Change to your actual host
 const RECEIVER_BASE_URL = "http://192.168.1.33:80"; //nginx portal

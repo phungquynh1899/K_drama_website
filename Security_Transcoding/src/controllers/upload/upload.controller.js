@@ -128,9 +128,9 @@ exports.completeUpload = async (req, res, next) => {
     });
     // Check with Server B if upload can be accepted
     const totalSizeMB = uploadService.getActualUploadSizeMB(uploadId);
-    const notifyUrl = `http://localhost:3004/api/v1/transfer/TransferFileFromServerAtoServerB`;
+    const notifyUrl = process.env.TEMP_UPLOAD_SERVER_HOST + `/api/v1/transfer/TransferFileFromServerAtoServerB`;
     await axios.post(
-      `http://localhost:3002/api/v1/upload/can-accept-upload`,
+      process.env.TRANSCODE_SERVER_HOST + `/api/v1/upload/can-accept-upload`,
       { 
         requiredSpaceMB: totalSizeMB,
         notifyUrl: notifyUrl,
@@ -397,9 +397,9 @@ exports.completeSeriesUpload = async (req, res, next) => {
 
     // Check with Server B if upload can be accepted (using actual chunk size)
     const totalSizeMB = uploadService.getActualUploadSizeMB(String(uploadId));
-    const notifyUrl = `http://localhost:3004/api/v1/transfer/TransferFileFromServerAtoServerB`;
+    const notifyUrl = process.env.TEMP_UPLOAD_SERVER_HOST + `/api/v1/transfer/TransferFileFromServerAtoServerB`;
     axios.post(
-      `http://localhost:3002/api/v1/upload/can-accept-upload`,
+      process.env.TRANSCODE_SERVER_HOST + `/api/v1/upload/can-accept-upload`,
       { 
         requiredSpaceMB: totalSizeMB,
         notifyUrl: notifyUrl,

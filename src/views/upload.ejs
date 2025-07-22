@@ -660,7 +660,7 @@
     
     async function cancelUpload(userId, uploadId) {
     try {
-        await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/cancelUpload', {
+        await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/cancelUpload', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId, uploadId })
@@ -714,7 +714,7 @@
                     formData.append('userId', userId)
                     formData.append('fileType', file.type); // Add file type to FormData
                     
-                    const response = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/chunk', {
+                    const response = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/chunk', {
                         method: 'POST',
                         body: formData
                     }, true);
@@ -742,7 +742,7 @@
         }
         
         // All chunks uploaded, now verify completion
-        const completeRes = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload/complete', {
+        const completeRes = await authFetch(window.UPLOAD_API_BASE_URL + '/api/v1/upload-temp/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -1,6 +1,6 @@
 const { Queue } = require('bullmq');
 
-const connection = { host: 'localhost', port: 6379 };
+const connection = { host: '192.168.1.145', port: 6379 };
 
 async function manageFailedJobs() {
   const queue = new Queue('backup', { connection });

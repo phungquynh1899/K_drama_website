@@ -25,7 +25,7 @@ app.set('views', path.join(__dirname, 'views'));
 //middleware
 const cors = require('cors');
 app.use(cors({
-  origin: 'http://localhost:3000'
+  origin: process.env.FRONT_END_SERVER_HOST
 }));
 app.use(express.json({ limit: '20kb'}));
 app.use(express.urlencoded({ limit: '20kb', extended: true }));
@@ -38,7 +38,7 @@ require('./db/BetterSqliteDatabase.js')
 
 //route
 app.use('/api/v1/transfer', transferRouter)
-app.use('/api/v1/upload/', uploadRouter) // xong 
+app.use('/api/v1/upload-temp/', uploadRouter) // xong 
 app.use('/api/v1/series/', seriesRouter)
 // app.use('/api/v1/thumbnail/', thumbnailRouter)
 

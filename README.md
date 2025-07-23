@@ -1,6 +1,6 @@
 # ⚠️ CẢNH BÁO BẢO MẬT
 
-**Lưu ý:** Để thuận tiện cho việc chạy thử dự án, tôitôi đã đẩy lên GitHub các file cấu hình như `.env` và một số file cấu hình hệ thống. Tuy nhiên, trong thực tế, việc public các file này là điều **tuyệt đối không được làmm** vì có thể gây rò rỉ thông tin nhạy cảm (API key, mật khẩu, cấu hình hệ thống, ...). Khi triển khai thực tế hoặc làm việc với dự án sản xuất, hãy luôn giữ các file cấu hình ở chế độ bảo mật, không commit/push lên repository công khai.
+**Lưu ý:** Để thuận tiện cho việc chạy thử dự án, tôi đã đẩy lên GitHub các file cấu hình như `.env` và một số file cấu hình hệ thống. Tuy nhiên, trong thực tế, việc public các file này là điều **tuyệt đối không được làm** vì có thể gây rò rỉ thông tin nhạy cảm (API key, mật khẩu, cấu hình hệ thống, ...). Khi triển khai thực tế hoặc làm việc với dự án sản xuất, hãy luôn giữ các file cấu hình ở chế độ bảo mật, không commit/push lên repository công khai.
 
 ---
 

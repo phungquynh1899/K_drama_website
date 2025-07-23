@@ -37,7 +37,7 @@ app.use(compression())
 require('./db/BetterSqliteDatabase.js')
 
 //route
-app.use('/api/v1/transfer', transferRouter)
+app.use('/api/v1/transfer/', transferRouter)
 app.use('/api/v1/upload-temp/', uploadRouter) // xong 
 app.use('/api/v1/series/', seriesRouter)
 // app.use('/api/v1/thumbnail/', thumbnailRouter)

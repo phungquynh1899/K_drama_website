@@ -1,0 +1,16 @@
+{
+  "received": [
+    "playlist.m3u8",
+    "segment_000.ts",
+    "segment_001.ts",
+    "segment_002.ts",
+    "segment_003.ts",
+    "segment_004.ts",
+    "segment_005.ts"
+  ],
+  "completed": true,
+  "completedAt": "2025-07-22T04:13:25.976Z",
+  "status": "success",
+  "message": "All files uploaded successfully.",
+  "uploadedFiles": []
+}

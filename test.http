@@ -1,7 +1,0 @@
-POST http://localhost:3000/api/v1/metadata/getVideoByUploadId
-Content-Type: application/json
-x-api-key: 82432a5fe6c1e9f89966e4d055ee34c980fdf6e4dbada360f40f360e2f48cff4
-
-{
-  "uploadId": 1752929830572090
-}

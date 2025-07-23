@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "all": "node ./server.js & node ./Backup_VideoMetadata_Notify_Services/server.js & node ./Security_Transcoding/server.js & node ./Streaming_Receiving/server.js & node ./Streaming_Receiving/src/queues/backup.worker.js"
   },
   "keywords": [],
   "author": "",
